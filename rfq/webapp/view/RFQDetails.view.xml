@@ -1,0 +1,1406 @@
+<mvc:View
+    xmlns:f="sap.f"
+    controllerName="com.aisp.rfq.controller.RFQDetails"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:m="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:u="sap.ui.unified"
+    xmlns="sap.uxap"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:l="sap.ui.layout"
+>
+    <ObjectPageLayout
+        id="ObjectPageLayout"
+        showTitleInHeaderContent="true"
+        alwaysShowContentHeader="false"
+        preserveHeaderStateOnScroll="false"
+        headerContentPinnable="true"
+        toggleHeaderOnTitleClick="true"
+        showFooter="true"
+        isChildPage="true"
+        upperCaseAnchorBar="false"
+    >
+        <headerTitle>
+            <ObjectPageDynamicHeaderTitle>
+                <breadcrumbs>
+                    <m:Breadcrumbs
+                        id="breadcrumbsId"
+                        currentLocationText="RFQ Details"
+                    >
+                        <m:Link
+                            text="RFQ Quotation List"
+                            press="handleLinkPress"
+                        />
+                    </m:Breadcrumbs>
+                </breadcrumbs>
+                <expandedHeading>
+                    <m:Title
+                        text="RFQ Number: {oHeaderModel>/results/0/RfqNumber}"
+                        wrapping="true"
+                    />
+                </expandedHeading>
+                <snappedHeading>
+                    <m:HBox
+                        wrap="NoWrap"
+                        alignItems="Center"
+                    >
+                        <m:Avatar
+                            src="./Images/objPageIcon.png"
+                            displaySize="S"
+                            displayShape="Square"
+                            class="sapUiTinyMarginEnd"
+                        />
+                        <m:VBox wrap="Wrap">
+                            <m:Title
+                                text="RFQ NO: {oHeaderModel>/results/0/RfqNumber}"
+                                wrapping="true"
+                            />
+                        </m:VBox>
+                    </m:HBox>
+                </snappedHeading>
+            </ObjectPageDynamicHeaderTitle>
+        </headerTitle>
+
+        <headerContent>
+            <m:FlexBox
+                direction="Row"
+                justifyContent="SpaceBetween"
+                alignItems="Start"
+                wrap="NoWrap"
+                class="sapUiSmallMargin"
+            >
+                <m:FlexBox
+                    direction="Row"
+                    wrap="Wrap"
+                    fitContainer="true"
+                    alignItems="Stretch"
+                >
+                    <m:Avatar
+                        src="./Images/objPageIcon.png"
+                        displaySize="L"
+                        displayShape="Square"
+                        class="sapUiMediumMarginEnd"
+                    />
+                    <m:VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <m:HBox class="sapUiTinyMarginBottom">
+                            <m:Label
+                                text="RFQ Desc:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:Text
+                                text="{oHeaderModel>/results/0/RfqDesc}"
+                                wrapping="true"
+                            />
+                        </m:HBox>
+                        <m:HBox class="sapUiTinyMarginBottom">
+                            <m:Label
+                                text="RFQ Pub. Date and Time:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:Text
+                                text="{
+                                    parts: [
+                                        { path: 'oHeaderModel>/results/0/Published_d' },
+                                        { path: 'oHeaderModel>/results/0/Published_t' }
+                                    ],
+                                    formatter: '.formatDateTime'
+                                }"
+                                wrapping="true"
+                            />
+                        </m:HBox>
+                        <m:HBox>
+                            <m:Label
+                                text="Quotation Deadline:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:VBox class="sapUiRedBox">
+                                <m:Text
+                                    text="{path:'oHeaderModel>/results/0/Deadline_dt', formatter:'.formatDate'}"
+                                    width="8rem"
+                                    wrapping="true"
+                                />
+                            </m:VBox>
+                        </m:HBox>
+                    </m:VBox>
+                    <m:VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <m:HBox class="sapUiTinyMarginBottom">
+                            <m:Label
+                                text="Payment Terms:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:Text
+                                text="{oHeaderModel>/results/0/PymentDesc}"
+                                wrapping="true"
+                            />
+                        </m:HBox>
+                        <m:HBox class="sapUiTinyMarginBottom">
+                            <m:Label
+                                text="Target Value:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:ObjectNumber
+                                number="{oHeaderModel>/results/0/TargetValue}"
+                                unit="{oHeaderModel>/results/0/PriceUnit}"
+                                class="sapUiTinyMarginEnd"
+                            />
+                        </m:HBox>
+                        <m:HBox>
+                            <m:Label
+                                text="Created By:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:Text
+                                text="{oHeaderModel>/results/0/CreatedBy}"
+                                wrapping="true"
+                            />
+                        </m:HBox>
+                    </m:VBox>
+                    <m:VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                        <m:HBox>
+                            <m:Label
+                                text="Status:"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:ObjectStatus
+                                text="{oHeaderModel>/results/0/Status}"
+                                inverted="true"
+                                state="{
+                                    parts: [{path: 'oHeaderModel>/results/0/Status'}],
+                                    formatter: '.formatStatusState'
+                                }"
+                            />
+                        </m:HBox>
+                    </m:VBox>
+                </m:FlexBox>
+
+                <m:HBox
+                    direction="Row"
+                    alignItems="Start"
+                    justifyContent="End"
+                >
+                    <m:VBox class="sapUiCountdownHighlight sapUiTinyMarginEnd">
+                        <m:Text
+                            text="{oCountdownModel>/days}"
+                            class="countdownNumber"
+                        />
+                        <m:Text
+                            text="Days"
+                            class="countdownUnit"
+                        />
+                    </m:VBox>
+                    <m:VBox class="sapUiCountdownHighlight sapUiTinyMarginEnd">
+                        <m:Text
+                            text="{oCountdownModel>/hours}"
+                            class="countdownNumber"
+                        />
+                        <m:Text
+                            text="Hrs"
+                            class="countdownUnit"
+                        />
+                    </m:VBox>
+                    <m:VBox class="sapUiCountdownHighlight sapUiTinyMarginEnd">
+                        <m:Text
+                            text="{oCountdownModel>/mins}"
+                            class="countdownNumber"
+                        />
+                        <m:Text
+                            text="Mins"
+                            class="countdownUnit"
+                        />
+                    </m:VBox>
+                    <m:VBox class="sapUiCountdownHighlight">
+                        <m:Text
+                            text="{oCountdownModel>/secs}"
+                            class="countdownNumber"
+                        />
+                        <m:Text
+                            text="Secs"
+                            class="countdownUnit"
+                        />
+                    </m:VBox>
+                </m:HBox>
+            </m:FlexBox>
+        </headerContent>
+
+        <sections>
+            <!-- STATIC WELCOME & RFQ Items -->
+            <ObjectPageSection title="Event Overview">
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <m:VBox
+                                width="100%"
+                                class="sapUiSmallMargin"
+                            >
+                                <m:VBox width="100%">
+                                    <m:Title
+                                        text="Welcome to Airdit's Supplier Portal!"
+                                        class="sapUiSmallMarginTopBottom"
+                                    />
+                                    <m:Text
+                                        text="We are excited to invite you to participate in our Request for Quotation (RFQ) event. This is your opportunity to submit competitive quotes for the materials and services required by Airdit. We value your expertise and look forward to receiving your proposal."
+                                    />
+                                    <m:Title
+                                        level="H5"
+                                        text="Review the RFQ Details:"
+                                        class="sapUiSmallMarginTopBottom"
+                                    />
+                                    <m:Text
+                                        text="Below you will find the list of materials or services for which we are requesting quotations. These items are essential to our ongoing operations, and we trust your company will provide the most competitive and accurate pricing. You can view the material descriptions, quantities, and delivery requirements for each item in the list. Before proceeding, please ensure you have reviewed the specifications carefully to offer the best quote."
+                                    />
+                                </m:VBox>
+                                <m:VBox
+                                    width="100%"
+                                    class="sapUiSmallMarginTopBottom"
+                                >
+                                    <m:Table
+                                        items="{oItemsModel>/results}"
+                                        id="rfqEventsTable"
+                                        inset="false"
+                                        growing="true"
+                                        growingThreshold="10"
+                                    >
+                                        <m:headerToolbar>
+                                            <m:Toolbar>
+                                                <m:Title
+                                                    text="List of RFQ‑Events ({= ${oItemsModel>/results}.length })"
+                                                    level="H4"
+                                                />
+                                                <m:ToolbarSpacer />
+                                                <m:SearchField
+                                                    width="20rem"
+                                                    placeholder="Search…"
+                                                    liveChange=".onSearchRFQEvents"
+                                                />
+                                            </m:Toolbar>
+                                        </m:headerToolbar>
+                                        <m:columns>
+                                            <m:Column>
+                                                <m:Text text="S.No" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Material Code" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Description" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Quantity" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Specification" />
+                                            </m:Column>
+                                        </m:columns>
+                                        <m:items>
+                                            <m:ColumnListItem>
+                                                <m:cells>
+                                                    <m:Text
+                                                        text="{oItemsModel>ItemNumber}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oItemsModel>MaterialNo}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oItemsModel>MaterialDesc}"
+                                                    />
+                                                    <m:ObjectNumber
+                                                        number="{oItemsModel>Quantity}"
+                                                        unit="{oItemsModel>UnitOfMeasure}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oItemsModel>basic_longtext}"
+                                                    />
+                                                </m:cells>
+                                            </m:ColumnListItem>
+                                        </m:items>
+                                    </m:Table>
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <!-- PRE REQUISITE -->
+            <ObjectPageSection
+                title="Pre Requisite"
+                visible="{uiState>/sections/preRequisite/visible}"
+            >
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <m:VBox
+                                width="100%"
+                                class="sapUiSmallMargin"
+                            >
+                                <m:Toolbar>
+                                    <m:ToolbarSpacer />
+                                    <m:Button
+                                        text="Revise Pre Requisite"
+                                        type="Emphasized"
+                                        press=".onRevisePreRequisite"
+                                        visible="{uiState>/buttons/revisePreRequisite/visible}"
+                                        enabled="{uiState>/buttons/revisePreRequisite/enabled}"
+                                    />
+                                </m:Toolbar>
+                                <!-- Questions -->
+                                <m:VBox
+                                    width="100%"
+                                    class="sapUiSmallMarginTop"
+                                >
+                                    <m:Title
+                                        text="Supplier Quotation Submission"
+                                    />
+                                    <m:Text
+                                        text="Before you can proceed with submitting your quotation, please complete the following pre-requisites. This step ensures that all the necessary information is provided and compliant with our RFQ terms."
+                                        class="sapUiSmallMargin"
+                                    />
+                                    <m:List
+                                        id="questionList"
+                                        items="{oQuestionsModel>/questions}"
+                                        class="sapUiSmallMarginBottom"
+                                        noDataText="No Questions Set By Admin"
+                                    >
+                                        <m:CustomListItem>
+                                            <m:VBox
+                                                fitContainer="true"
+                                                class="sapUiSmallMargin"
+                                            >
+                                                <!-- question text -->
+                                                <m:Label
+                                                    text="{oQuestionsModel>QUESTION_TEXT}"
+                                                    required="{oQuestionsModel>IS_MANDATORY}"
+                                                    wrapping="true"
+                                                />
+                                                <m:RadioButtonGroup
+                                                    selectedIndex="{= ${oQuestionsModel>RESPONSE} === 'Yes' ? 0 : 1 }"
+                                                    columns="2"
+                                                    select=".onAnswerSelect"
+                                                    enabled="{uiState>/sections/preRequisite/enabled}"
+                                                >
+                                                    <m:buttons>
+                                                        <m:RadioButton
+                                                            text="Yes"
+                                                        />
+                                                        <m:RadioButton
+                                                            text="No"
+                                                        />
+                                                    </m:buttons>
+                                                </m:RadioButtonGroup>
+                                            </m:VBox>
+                                        </m:CustomListItem>
+                                    </m:List>
+                                </m:VBox>
+                                <!-- Attachments -->
+                                <m:VBox width="100%">
+                                    <m:Title
+                                        text="Document Upload Requirements"
+                                    />
+                                    <m:Text
+                                        text="Please upload the following documents to proceed with your quotation submission"
+                                        class="sapUiSmallMargin"
+                                    />
+                                    <m:MessageStrip
+                                        text="Supported Attachment Types: txt, pdf, xlsx, csv. Attachment Size up to 3 MB"
+                                        showIcon="true"
+                                        showCloseButton="false"
+                                        class="sapUiTinyMarginBottom"
+                                    />
+                                    <m:List
+                                        id="attachmentList"
+                                        items="{oAttachmentsModel>/attachments}"
+                                        inset="false"
+                                        noDataText="No Attachments Set By Admin"
+                                    >
+                                        <m:CustomListItem>
+                                            <m:VBox class="sapUiSmallMargin">
+                                                <!-- Description Title -->
+                                                <m:Title
+                                                    level="H5"
+                                                    text="{oAttachmentsModel>DESCRIPTION}"
+                                                    class="sapUiTinyMarginBottom"
+                                                />
+
+                                                <!-- Upload + Inputs Row -->
+                                                <m:HBox
+                                                    renderType="Bare"
+                                                    alignItems="Center"
+                                                    justifyContent="SpaceBetween"
+                                                    width="100%"
+                                                    class="sapUiTinyMarginTop"
+                                                >
+                                                    <!-- Description -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="Description"
+                                                        />
+                                                        <m:Input
+                                                            value="{oAttachmentsModel>RESPONSE_DESCRIPTION}"
+                                                            placeholder="Enter Description"
+                                                            editable="{uiState>/sections/preRequisite/enabled}"
+                                                        />
+                                                    </m:VBox>
+
+                                                    <!-- Upload -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="Upload"
+                                                        />
+                                                        <u:FileUploader
+                                                            change=".onUploadChange"
+                                                            width="100%"
+                                                            buttonOnly="true"
+                                                            fileEmpty="onFileEmpty"
+                                                            fileSizeExceed="onFileSizeExceed"
+                                                            maximumFileSize="3"
+                                                            multiple="false"
+                                                            sendXHR="false"
+                                                            enabled="{= ${uiState>/sections/preRequisite/enabled} &amp;&amp; !${oAttachmentsModel>RESPONSE_REASON_FOR_ABSENCE} }"
+                                                        />
+                                                    </m:VBox>
+
+                                                    <!-- File Name -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="File Name"
+                                                        />
+                                                        <m:Text
+                                                            text="{oAttachmentsModel>RESPONSE_FILE_NAME}"
+                                                        />
+                                                    </m:VBox>
+
+                                                    <!-- Reason for Absence -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="Reason for Absence"
+                                                        />
+                                                        <m:Input
+                                                            editable="{= ${uiState>/sections/preRequisite/enabled} &amp;&amp; !${oAttachmentsModel>RESPONSE_FILE_NAME} }"
+                                                            placeholder="Enter reason"
+                                                            value="{oAttachmentsModel>RESPONSE_REASON_FOR_ABSENCE}"
+                                                        />
+                                                    </m:VBox>
+
+                                                    <!-- Preview -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="Preview"
+                                                        />
+                                                        <m:Button
+                                                            icon="sap-icon://show"
+                                                            type="Transparent"
+                                                            press=".onPreviewAttachment"
+                                                            enabled="{= ${uiState>/sections/preRequisite/enabled} &amp;&amp; !!${oAttachmentsModel>RESPONSE_FILE_URL} }"
+                                                        />
+                                                    </m:VBox>
+
+                                                    <!-- Delete -->
+                                                    <m:VBox width="12%">
+                                                        <m:Label
+                                                            text="Delete"
+                                                        />
+                                                        <m:Button
+                                                            icon="sap-icon://delete"
+                                                            type="Transparent"
+                                                            press=".onDeleteAttachment"
+                                                            enabled="{= ${uiState>/sections/preRequisite/enabled} &amp;&amp; !!${oAttachmentsModel>RESPONSE_FILE_URL}}"
+                                                        />
+                                                    </m:VBox>
+                                                </m:HBox>
+                                            </m:VBox>
+                                        </m:CustomListItem>
+                                    </m:List>
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <!-- CREATE QUOTATION -->
+            <ObjectPageSection
+                title="Create Quotation"
+                visible="{uiState>/sections/createQuotation/visible}"
+            >
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <m:VBox width="100%">
+                                <!-- Manual vs Excel -->
+                                <m:Toolbar class="sapUiSmallMarginBottom">
+                                    <m:RadioButtonGroup
+                                        columns="2"
+                                        selectedIndex="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' ? 0 : 1 }"
+                                        select=".onRadioButtonSelect"
+                                        enabled="{uiState>/sections/createQuotation/enabled}"
+                                    >
+                                        <m:buttons>
+                                            <m:RadioButton text="Manual" />
+                                            <m:RadioButton
+                                                text="Excel Upload"
+                                            />
+                                        </m:buttons>
+                                    </m:RadioButtonGroup>
+
+                                    <m:ToolbarSpacer />
+                                    <m:Button
+                                        text="Revise Quotation"
+                                        type="Emphasized"
+                                        press=".onReviseQuotation"
+                                        visible="{uiState>/buttons/reviseQuotation/visible}"
+                                        enabled="{uiState>/buttons/reviseQuotation/enabled}"
+                                    />
+                                    <u:FileUploader
+                                        id="excelUpload"
+                                        change="onExcelUpload"
+                                        fileType="xlsx,csv"
+                                        buttonOnly="true"
+                                        buttonText="Upload"
+                                        maximumFileSize="2"
+                                        fileSizeExceed="onFileSizeExceed"
+                                        multiple="false"
+                                        enabled="{= ${oSelectedOptionModel>/selectedOption} === 'Excel Upload' &amp;&amp; ${uiState>/submission/state} !== 'preview' &amp;&amp; ${uiState>/sections/createQuotation/enabled} }"
+                                    />
+                                    <m:Button
+                                        text="Download Template"
+                                        icon="sap-icon://download"
+                                        iconFirst="false"
+                                        press=".onDownloadTemplate"
+                                        enabled="{= ${oSelectedOptionModel>/selectedOption} === 'Excel Upload' &amp;&amp; ${uiState>/submission/state} !== 'preview' &amp;&amp; ${uiState>/sections/createQuotation/enabled} }"
+                                    />
+                                </m:Toolbar>
+
+                                <l:VerticalLayout
+                                    class="sapUiSmallMarginTopBottom"
+                                >
+                                    <m:Table
+                                        id="groupedTable"
+                                        inset="false"
+                                        headerText=""
+                                        items="{
+                                            path: 'oWorkItemsModel>/results',
+                                            sorter: {
+                                                path: 'LotType',
+                                                group: true
+                                            }
+                                        }"
+                                    >
+                                        <m:headerToolbar>
+                                            <m:Toolbar>
+                                                <m:Title
+                                                    text="Material-Details"
+                                                />
+                                                <m:ToolbarSpacer />
+                                            </m:Toolbar>
+                                        </m:headerToolbar>
+                                        <m:columns>
+                                            <m:Column>
+                                                <m:Text text="Item No" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Material no" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Material Desc" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="UOM" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Plant" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text
+                                                    text="Required Quantity"
+                                                />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text
+                                                    text="Net Price - INR"
+                                                />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Total Price" />
+                                            </m:Column>
+                                        </m:columns>
+                                        <m:items>
+                                            <m:ColumnListItem>
+                                                <m:cells>
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>ItemNumber}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>MaterialNo}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>MaterialDesc}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>UnitOfMeasure}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>Plant}"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>Quantity}"
+                                                    />
+                                                    <m:Input
+                                                        value="{oWorkItemsModel>Netpr}"
+                                                        type="Number"
+                                                        placeholder="Enter Net Price"
+                                                        change=".onNetPriceChange"
+                                                        editable="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' &amp;&amp; ${uiState>/submission/state} !== 'preview'  &amp;&amp; ${uiState>/sections/createQuotation/enabled} }"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkItemsModel>Netwr}"
+                                                    />
+                                                </m:cells>
+                                            </m:ColumnListItem>
+                                        </m:items>
+                                    </m:Table>
+                                </l:VerticalLayout>
+
+                                <!-- Additional Charges -->
+                                <m:Table
+                                    id="chargesTable"
+                                    inset="false"
+                                    items="{oWorkHeaderModel>/results/0/Additional_Charges}"
+                                    class="sapUiSmallMarginTopBottom"
+                                    mode="{= ${uiState>/submission/state} === 'preview' ? 'None' : 'MultiSelect' }"
+                                >
+                                    <m:headerToolbar>
+                                        <m:Toolbar>
+                                            <m:Title
+                                                text="Additional Charges"
+                                            />
+                                            <m:ToolbarSpacer />
+                                            <m:Button
+                                                icon="sap-icon://add"
+                                                text="Add"
+                                                press=".onAddAdditionalCharges"
+                                                enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/buttons/addCharge/enabled} }"
+                                            />
+                                            <m:Button
+                                                icon="sap-icon://delete"
+                                                text="Delete"
+                                                press=".onDeleteCharges"
+                                                enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/buttons/deleteCharge/enabled}}"
+                                            />
+                                            <!-- enabled="{= ${$source>/selectedContexts}.length > 0 &amp;&amp; ${uiState>/submission/state} !== 'preview'  &amp;&amp; ${uiState>/buttons/deleteCharge/enabled} }" -->
+                                        </m:Toolbar>
+                                    </m:headerToolbar>
+                                    <m:columns>
+                                        <m:Column>
+                                            <m:Text text="Charge Name" />
+                                        </m:Column>
+                                        <m:Column>
+                                            <m:Text text="Price" />
+                                        </m:Column>
+                                    </m:columns>
+                                    <m:items>
+                                        <m:ColumnListItem>
+                                            <m:cells>
+                                                <m:Text
+                                                    text="{oWorkHeaderModel>Charge_Name}"
+                                                />
+                                                <m:Text
+                                                    text="{oWorkHeaderModel>Charge_Price}"
+                                                />
+                                            </m:cells>
+                                        </m:ColumnListItem>
+                                    </m:items>
+                                </m:Table>
+
+                                <!-- Attachments -->
+                                <m:VBox
+                                    class="sapUiSmallMargin sapUiSmallMarginTop sapUiSmallMarginBottom"
+                                >
+                                    <!-- Supported Attachment Types and Size Limit -->
+                                    <m:MessageStrip
+                                        text="Supported Attachment Types: txt, pdf, xlsx, csv. Attachment Size up to 1 MB"
+                                        showIcon="true"
+                                        showCloseButton="false"
+                                        class="sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Attachments Header -->
+                                    <m:HBox
+                                        justifyContent="SpaceBetween"
+                                        alignItems="Center"
+                                        class="sapUiTinyMarginBottom"
+                                    >
+                                        <!-- Attachments count title -->
+                                        <m:Title
+                                            text="Attachments"
+                                            level="H3"
+                                            id="attachmentsCountTitle"
+                                        />
+
+                                        <!-- Direct FileUploader displayed as a button -->
+                                        <u:FileUploader
+                                            id="fileUploader"
+                                            change="onFileSelected"
+                                            fileType="xlsx,csv,pdf,jpg,png,jpeg"
+                                            buttonOnly="true"
+                                            buttonText="Upload"
+                                            maximumFileSize="3"
+                                            fileSizeExceed="onFileSizeExceed"
+                                            multiple="false"
+                                            placeholder="Select Files to Upload"
+                                            enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                        />
+                                    </m:HBox>
+
+                                    <!-- Attachments List -->
+                                    <m:List
+                                        id="attachmentsList"
+                                        items="{oWorkHeaderModel>/results/0/Additional_Attachments}"
+                                        inset="false"
+                                        noDataText="No attachments uploaded."
+                                        class="sapUiNoMargin"
+                                    >
+                                        <m:CustomListItem>
+                                            <m:HBox
+                                                justifyContent="SpaceBetween"
+                                                alignItems="Center"
+                                                class="sapUiSmallMargin"
+                                            >
+                                                <!-- LEFT SIDE: Icon + Attachment Details -->
+                                                <m:HBox alignItems="Center">
+                                                    <core:Icon
+                                                        src="sap-icon://document-text"
+                                                        size="2rem"
+                                                        class="sapUiSmallMarginEnd"
+                                                    />
+                                                    <m:VBox>
+                                                        <m:Text
+                                                            text="{oWorkHeaderModel>FILE_NAME}"
+                                                            class="sapUiTinyMarginBottom"
+                                                        />
+                                                        <m:Text
+                                                            text="Status: Uploaded"
+                                                        />
+                                                    </m:VBox>
+                                                </m:HBox>
+
+                                                <!-- RIGHT SIDE: Edit & Delete Buttons -->
+                                                <m:HBox alignItems="Center">
+                                                    <m:Button
+                                                        icon="sap-icon://show"
+                                                        type="Transparent"
+                                                        tooltip="Preview Attachment"
+                                                        press=".onPreviewAdditionalAttachment"
+                                                        class="sapUiTinyMarginEnd"
+                                                        enabled="{= !!${oWorkHeaderModel>FILE_URL} }"
+                                                    >
+                                                        <m:customData>
+                                                            <core:CustomData
+                                                                key="imageUrl"
+                                                                value="{oWorkHeaderModel>FILE_URL}"
+                                                                writeToDom="false"
+                                                            />
+                                                        </m:customData>
+                                                    </m:Button>
+                                                    <m:Button
+                                                        icon="sap-icon://delete"
+                                                        type="Transparent"
+                                                        tooltip="Delete Attachment"
+                                                        press=".onDeleteAdditionalAttachmentPress"
+                                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                                    />
+                                                </m:HBox>
+                                            </m:HBox>
+                                        </m:CustomListItem>
+                                    </m:List>
+
+                                    <!-- Remarks -->
+                                    <m:Title
+                                        text="Remarks"
+                                        level="H4"
+                                        class="sapUiMediumMarginTop"
+                                    />
+                                    <m:TextArea
+                                        value="{oWorkHeaderModel>/remarks}"
+                                        placeholder="Enter text here"
+                                        rows="4"
+                                        width="100%"
+                                        editable="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                    />
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <!-- PREVIEW AND SUBMIT SECTION -->
+            <ObjectPageSection
+                id="previewSection"
+                title="Preview and Submit"
+                visible="{uiState>/sections/preview/visible}"
+            >
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <m:VBox
+                                width="100%"
+                                class="sapUiSmallMargin"
+                            >
+                                <m:Title
+                                    text="Review Your Submission"
+                                    level="H2"
+                                />
+                                <m:Text
+                                    text="Please review all your responses before final submission."
+                                    class="sapUiSmallMarginBottom"
+                                />
+
+                                <!-- RFQ Summary -->
+                                <m:Panel
+                                    expandable="true"
+                                    expanded="true"
+                                    headerText="RFQ Summary"
+                                >
+                                    <m:VBox class="sapUiSmallMargin">
+                                        <m:HBox class="sapUiSmallMarginBottom">
+                                            <m:Label
+                                                text="RFQ Number:"
+                                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                                                width="150px"
+                                            />
+                                            <m:Text
+                                                text="{oHeaderModel>/results/0/RfqNumber}"
+                                            />
+                                        </m:HBox>
+                                        <m:HBox class="sapUiSmallMarginBottom">
+                                            <m:Label
+                                                text="Description:"
+                                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                                                width="150px"
+                                            />
+                                            <m:Text
+                                                text="{oHeaderModel>/results/0/RfqDesc}"
+                                            />
+                                        </m:HBox>
+                                        <m:HBox class="sapUiSmallMarginBottom">
+                                            <m:Label
+                                                text="Deadline:"
+                                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                                                width="150px"
+                                            />
+                                            <m:Text
+                                                text="{path:'oHeaderModel>/results/0/Deadline_dt', formatter:'.formatDate'}"
+                                            />
+                                        </m:HBox>
+                                        <m:HBox class="sapUiSmallMarginBottom">
+                                            <m:Label
+                                                text="Status:"
+                                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                                                width="150px"
+                                            />
+                                            <m:ObjectStatus
+                                                text="{oHeaderModel>/results/0/Status}"
+                                                state="{
+                                                    parts: [{path: 'oHeaderModel>/results/0/Status'}],
+                                                    formatter: '.formatStatusState'
+                                                }"
+                                            />
+                                        </m:HBox>
+                                    </m:VBox>
+                                </m:Panel>
+
+                                <!-- Pricing Summary -->
+                                <m:Panel
+                                    expandable="true"
+                                    expanded="true"
+                                    headerText="Pricing Summary"
+                                    class="sapUiMediumMarginTop"
+                                >
+                                    <m:VBox class="sapUiSmallMargin">
+                                        <m:Table
+                                            items="{oWorkItemsModel>/results}"
+                                            mode="None"
+                                            class="sapUiSmallMarginBottom"
+                                        >
+                                            <m:columns>
+                                                <m:Column>
+                                                    <m:Text text="Item No" />
+                                                </m:Column>
+                                                <m:Column>
+                                                    <m:Text text="Material" />
+                                                </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text text="Quantity" />
+                                                </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text text="Unit Price" />
+                                                </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text
+                                                        text="Total Price"
+                                                    />
+                                                </m:Column>
+                                            </m:columns>
+                                            <m:items>
+                                                <m:ColumnListItem>
+                                                    <m:cells>
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>ItemNumber}"
+                                                        />
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>MaterialDesc}"
+                                                        />
+                                                        <m:ObjectNumber
+                                                            number="{oWorkItemsModel>Quantity}"
+                                                            unit="{oWorkItemsModel>UnitOfMeasure}"
+                                                            state="None"
+                                                        />
+                                                        <m:ObjectNumber
+                                                            number="{oWorkItemsModel>Netpr}"
+                                                            unit="{oHeaderModel>/results/0/PriceUnit}"
+                                                            state="None"
+                                                        />
+                                                        <m:ObjectNumber
+                                                            number="{oWorkItemsModel>Netwr}"
+                                                            unit="{oHeaderModel>/results/0/PriceUnit}"
+                                                            state="None"
+                                                        />
+                                                    </m:cells>
+                                                </m:ColumnListItem>
+                                            </m:items>
+                                        </m:Table>
+
+                                        <!-- Additional Charges -->
+                                        <m:Label
+                                            text="Additional Charges:"
+                                            class="sapUiSmallMarginTop sapUiTinyMarginBottom"
+                                        />
+                                        <m:VBox>
+                                            <m:Table
+                                                items="{oWorkHeaderModel>/results/0/Additional_Charges}"
+                                                mode="None"
+                                                class="sapUiSmallMarginBottom"
+                                                visible="{= !!${oWorkHeaderModel>/results/0/Additional_Charges} &amp;&amp; ${oWorkHeaderModel>/results/0/Additional_Charges}.length > 0}"
+                                            >
+                                                <m:columns>
+                                                    <m:Column>
+                                                        <m:Text
+                                                            text="Charge Name"
+                                                        />
+                                                    </m:Column>
+                                                    <m:Column hAlign="End">
+                                                        <m:Text text="Amount" />
+                                                    </m:Column>
+                                                </m:columns>
+                                                <m:items>
+                                                    <m:ColumnListItem>
+                                                        <m:cells>
+                                                            <m:Text
+                                                                text="{oWorkHeaderModel>Charge_Name}"
+                                                            />
+                                                            <m:ObjectNumber
+                                                                number="{oWorkHeaderModel>Charge_Price}"
+                                                                unit="{oHeaderModel>/results/0/PriceUnit}"
+                                                                state="None"
+                                                            />
+                                                        </m:cells>
+                                                    </m:ColumnListItem>
+                                                </m:items>
+                                            </m:Table>
+                                            <m:Text
+                                                text="No Additional Charges provided"
+                                                visible="{= !${oWorkHeaderModel>/results/0/Additional_Charges} || ${oWorkHeaderModel>/results/0/Additional_Charges}.length === 0 }"
+                                            />
+                                        </m:VBox>
+
+                                        <!-- Total -->
+                                        <m:HBox
+                                            justifyContent="End"
+                                            class="sapUiSmallMarginTop sapUiMediumMarginBottom"
+                                        >
+                                            <m:Label
+                                                text="Total Quotation Value:"
+                                                class="sapUiTinyMarginEnd sapUiLargeBold"
+                                            />
+                                            <!-- <m:ObjectNumber
+                                                number="{
+                                                    parts: [
+                                                        {path: 'oWorkItemsModel>/results'},
+                                                        {path: 'oWorkHeaderModel>/results/0/Additional_Charges'},
+                                                        {path: 'oHeaderModel>/results/0/PriceUnit'}
+                                                    ],
+                                                    formatter: '.calculateTotalValue'
+                                                }"
+                                                unit="{oHeaderModel>/results/0/PriceUnit}"
+                                                state="Success"
+                                                class="sapUiLargeBold"
+                                            /> -->
+                                            <m:ObjectNumber
+                                                number="{oTotalModel>/TotalQuotationValue}"
+                                                unit="{oHeaderModel>/results/0/PriceUnit}"
+                                                state="Success"
+                                                class="sapUiLargeBold"
+                                            />
+                                        </m:HBox>
+                                    </m:VBox>
+                                </m:Panel>
+
+                                <!-- Attachments Preview -->
+                                <m:Panel
+                                    expandable="true"
+                                    expanded="true"
+                                    headerText="Attachments"
+                                    class="sapUiMediumMarginTop"
+                                >
+                                    <m:VBox class="sapUiSmallMargin">
+                                        <m:List
+                                            items="{oWorkHeaderModel>/results/0/Additional_Attachments}"
+                                            mode="None"
+                                            visible="{= !!${oWorkHeaderModel>/results/0/Additional_Attachments} &amp;&amp; ${oWorkHeaderModel>/results/0/Additional_Attachments}.length > 0}"
+                                            noDataText="No attachments uploaded"
+                                        >
+                                            <m:CustomListItem>
+                                                <m:HBox alignItems="Center">
+                                                    <core:Icon
+                                                        src="sap-icon://document-text"
+                                                        size="1.5rem"
+                                                        class="sapUiTinyMarginEnd"
+                                                    />
+                                                    <m:Text
+                                                        text="{oWorkHeaderModel>FILE_NAME}"
+                                                        class="sapUiTinyMarginEnd"
+                                                    />
+                                                    <m:Button
+                                                        icon="sap-icon://show"
+                                                        type="Transparent"
+                                                        press=".onAttachmentPreview"
+                                                        tooltip="Preview Attachment"
+                                                    />
+                                                </m:HBox>
+                                            </m:CustomListItem>
+                                        </m:List>
+                                        <m:Text
+                                            text="No Additional Attachments provided"
+                                            visible="{= !${oWorkHeaderModel>/results/0/Additional_Attachments} || ${oWorkHeaderModel>/results/0/Additional_Attachments}.length === 0 }"
+                                        />
+                                    </m:VBox>
+                                </m:Panel>
+
+                                <!-- Remarks Preview -->
+                                <m:Panel
+                                    expandable="true"
+                                    expanded="true"
+                                    headerText="Remarks"
+                                    class="sapUiMediumMarginTop"
+                                >
+                                    <m:VBox class="sapUiSmallMargin">
+                                        <m:Text
+                                            text="{oWorkHeaderModel>/remarks}"
+                                            visible="{= !!${oWorkHeaderModel>/remarks}}"
+                                        />
+                                        <m:Text
+                                            text="No remarks provided"
+                                            visible="{= !${oWorkHeaderModel>/remarks}}"
+                                        />
+                                    </m:VBox>
+                                </m:Panel>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <!-- Awarded Section -->
+            <ObjectPageSection
+                title="Awarded"
+                visible="{uiState>/sections/awardedResults/visible}"
+            >
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <!-- Static Message for Awarded -->
+                            <m:VBox
+                                class="sapUiSmallMargin"
+                                width="100%"
+                            >
+                                <m:ObjectStatus
+                                    class="sapMObjectStatusLarge"
+                                    text="Congratulations!!!"
+                                    state="Indication18"
+                                    inverted="true"
+                                />
+
+                                <m:Title
+                                    text="Dear - {oHeaderModel>/results/0/VendorAccgrpName}"
+                                    class="sapUiSmallMarginTopBottom"
+                                    level="H3"
+                                    tooltip="Awarded to RMS"
+                                />
+
+                                <m:Text
+                                    text="We are pleased to announce that, after a thorough and comprehensive evaluation process, Airdit Software Services has awarded the quotation for RFQ No: {oHeaderModel>/results/0/RfqNumber} to your esteemed company."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="Your proposal stood out due to its alignment with our expectations, exceptional quality, and competitive pricing."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="This milestone marks the beginning of a fruitful partnership, and we are excited to move forward with your services in fulfilling this important project."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="At Airdit Software Services, we value collaboration, transparency, and mutual growth, and we look forward to a successful partnership."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="We are confident that together, we will achieve excellence and deliver outstanding results."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="Thank you once again for your commitment. We are excited to embark on this journey with you."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="Best Regards,"
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:VBox
+                                    class="sapUiSmallMarginTopBottom"
+                                    width="100%"
+                                >
+                                    <!-- Buyer Name -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Buyer Name:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/VendorName}"
+                                        />
+                                    </m:HBox>
+
+                                    <!-- Position -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Position:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/Position}"
+                                            class="sapUiTinyMarginBottom"
+                                        />
+                                    </m:HBox>
+
+                                    <!-- Email -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Email:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/Email}"
+                                            class="sapUiTinyMarginBottom"
+                                        />
+                                    </m:HBox>
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <!-- Rejected Section -->
+            <ObjectPageSection
+                title="Rejected"
+                visible="{= ${uiState>/sections/rejectedResults/visible} }"
+            >
+                <subSections>
+                    <ObjectPageSubSection>
+                        <blocks>
+                            <!-- Static Message for Rejected -->
+                            <m:VBox
+                                class="sapUiSmallMargin"
+                                width="100%"
+                            >
+                                <m:Title
+                                    text="Dear - {oHeaderModel>/results/0/VendorAccgrpName}"
+                                    class="sapUiSmallMarginTopBottom"
+                                    level="H3"
+                                    tooltip="Awarded to RMS"
+                                />
+
+                                <m:Text
+                                    text="After careful consideration, we regret to inform you that your quotation for RFQ No: {oHeaderModel>/results/0/RfqNumber} has not been selected for this project."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="While we truly value the effort and time you invested in preparing your proposal,"
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="We appreciate your participation and encourage you to continue engaging with us for future opportunities."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="We hope to collaborate on upcoming projects and look forward to your continued involvement."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="If you would like to receive feedback or further clarification regarding this decision, "
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="please do not hesitate to reach out. We are happy to assist and provide any insights."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="Thank you once again for your time and effort."
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:Text
+                                    text="Best Regards,"
+                                    class="sapUiTinyMarginBottom"
+                                />
+
+                                <m:VBox
+                                    class="sapUiSmallMarginTopBottom"
+                                    width="100%"
+                                >
+                                    <!-- Buyer Name -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Buyer Name:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/VendorName}"
+                                        />
+                                    </m:HBox>
+
+                                    <!-- Position -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Position:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/Position}"
+                                            class="sapUiTinyMarginBottom"
+                                        />
+                                    </m:HBox>
+
+                                    <!-- Email -->
+                                    <m:HBox class="sapUiTinyMarginBottom">
+                                        <m:Label
+                                            text="Email:"
+                                            class="sapUiBold"
+                                        />
+                                        <m:Text
+                                            text="{oHeaderModel>/results/0/Email}"
+                                            class="sapUiTinyMarginBottom"
+                                        />
+                                    </m:HBox>
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+        </sections>
+
+        <footer>
+            <m:Toolbar id="otbFooter">
+                <m:ToolbarSpacer />
+                <m:Button
+                    type="Back"
+                    text="Cancel"
+                    press="_navigateToList"
+                />
+                <m:Button
+                    type="Success"
+                    icon="sap-icon://sys-enter"
+                    text="Accept"
+                    press="onRFQAccept"
+                    visible="{uiState>/buttons/accept/visible}"
+                    enabled="{uiState>/buttons/accept/enabled}"
+                />
+                <m:Button
+                    type="Reject"
+                    icon="sap-icon://decline"
+                    text="Reject"
+                    press="onRFQReject"
+                    visible="{uiState>/buttons/reject/visible}"
+                    enabled="{uiState>/buttons/reject/enabled}"
+                />
+                <m:Button
+                    text="Confirm and Proceed"
+                    type="Success"
+                    press=".onConfirmAndProceed"
+                    visible="{uiState>/buttons/confirm/visible}"
+                    enabled="{uiState>/buttons/confirm/enabled}"
+                />
+                <m:Button
+                    text="Submit RFQ"
+                    type="Success"
+                    press=".onSubmitRFQ"
+                    visible="{uiState>/buttons/submit/visible}"
+                    enabled="{uiState>/buttons/submit/enabled}"
+                />
+                <m:Button
+                    text="Save Draft"
+                    type="Default"
+                    press=".onSaveDraft"
+                    visible="{uiState>/buttons/draft/visible}"
+                    enabled="{uiState>/buttons/draft/enabled}"
+                    class="sapUiSmallMarginEnd"
+                />
+                <m:Button
+                    text="Final Submit RFQ"
+                    type="Emphasized"
+                    press=".onFinalSubmit"
+                    busy="{uiState>/submission/isSubmitting}"
+                    visible="{uiState>/buttons/finalSubmit/visible}"
+                    enabled="{uiState>/buttons/finalSubmit/enabled}"
+                />
+                <m:Button
+                    text="Final Submit Draft"
+                    type="Emphasized"
+                    press=".onFinalDraft"
+                    busy="{uiState>/submission/isSubmitting}"
+                    visible="{uiState>/buttons/finalDraft/visible}"
+                    enabled="{uiState>/buttons/finalDraft/enabled}"
+                />
+                <m:Button
+                    text="Update Pre-requisites"
+                    type="Success"
+                    press=".onUpdatePreRequisites"
+                    visible="{uiState>/buttons/updatePreRequisite/visible}"
+                    enabled="{uiState>/buttons/updatePreRequisite/enabled}"
+                />
+                <m:Button
+                    text="Update Quotation"
+                    type="Success"
+                    press=".onUpdateQuotation"
+                    visible="{uiState>/buttons/updateQuotation/visible}"
+                    enabled="{uiState>/buttons/updateQuotation/enabled}"
+                />
+            </m:Toolbar>
+        </footer>
+    </ObjectPageLayout>
+</mvc:View>

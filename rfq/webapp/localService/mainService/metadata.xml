@@ -1,0 +1,915 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZC_AISP_RFQ_HDR_BNDSampleService" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+                <EntitySet Name="ZC_AISP_RFQ_HDR" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:label="Consumption View for RFQ Header"/>
+                <EntitySet Name="ZC_AISP_RFQ_ITEM" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:label="Consumption View for RFQ Item"/>
+                <EntitySet Name="ZC_AISP_RFQ_WORK_HDR" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR"/>
+                <EntitySet Name="ZC_AISP_RFQ_WORK_ITEM" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM"/>
+                <EntitySet Name="SupplierPreReqQstns" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns"/>
+                <EntitySet Name="SupplierResponses" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponses"/>
+                <EntitySet Name="SupplierPreReqAttchmnts" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts"/>
+                <EntitySet Name="SupplierAttachments" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments"/>
+                <EntitySet Name="ZC_AISP_RFQ_DRAFT" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT"/>
+                <EntitySet Name="RFQ_status" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.RFQ_status"/>
+                <FunctionImport Name="setRFQStatus" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Action" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Remarks" Type="Edm.String" Mode="In" Nullable="true"/>
+                </FunctionImport>
+                <FunctionImport Name="changeRFQStatus" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="NewStatus" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Remarks" Type="Edm.String" Mode="In" Nullable="true"/>
+                </FunctionImport>
+                <FunctionImport Name="saveRFQResponseAndAttachments" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="ACCOUNT_GROUP" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Responses" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponse)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false" Mode="In"/>
+                </FunctionImport>
+                <FunctionImport Name="editRFQResponsesAndAttachments" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="ACCOUNT_GROUP" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Responses" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponse)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false" Mode="In"/>
+                </FunctionImport>
+                <FunctionImport Name="deleteRFQAttachment" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="ACCOUNT_GROUP" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="DOCUMENT_ID" Type="Edm.String" Mode="In" Nullable="true"/>
+                </FunctionImport>
+                <FunctionImport Name="generateMassUploadExcel" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                </FunctionImport>
+                <FunctionImport Name="SubmitRFQ" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="items" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Additional_Charge_Present" Type="Edm.Boolean" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Charges" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Remarks" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Attachment_Present" Type="Edm.Boolean" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false" Mode="In"/>
+                </FunctionImport>
+                <FunctionImport Name="EditRFQ" ReturnType="Edm.String" m:HttpMethod="POST">
+                    <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Items" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Additional_Charge_Present" Type="Edm.Boolean" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Charges" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges)" Nullable="false" Mode="In"/>
+                    <Parameter Name="Remarks" Type="Edm.String" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Attachment_Present" Type="Edm.Boolean" Mode="In" Nullable="true"/>
+                    <Parameter Name="Additional_Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false" Mode="In"/>
+                </FunctionImport>
+                <FunctionImport Name="Test" ReturnType="Edm.String" m:HttpMethod="POST"/>
+            </EntityContainer>
+            <EntityType Name="ZC_AISP_RFQ_HDR" sap:content-version="1" sap:label="Consumption View for RFQ Header">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" MaxLength="10" Nullable="false" sap:display-format="UpperCase" sap:label="Purchasing Document" sap:quickinfo="Purchasing Document Number"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10" Nullable="false" sap:display-format="UpperCase" sap:label="Ref. to suplr" sap:quickinfo="Reference to other supplier"/>
+                <Property Name="CompanyCode" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Company Code"/>
+                <Property Name="DocumentType" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Purchasing Doc. Type" sap:quickinfo="Purchasing Document Type"/>
+                <Property Name="PurchasingOrg" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Purch. organization" sap:quickinfo="Purchasing organization"/>
+                <Property Name="PurchasingGroup" Type="Edm.String" MaxLength="3" sap:display-format="UpperCase" sap:label="Purchasing Group"/>
+                <Property Name="DocumentDate" Type="Edm.DateTime" sap:display-format="Date" sap:label="Document Date" sap:quickinfo="Purchasing Document Date"/>
+                <Property Name="PriceUnit" Type="Edm.String" MaxLength="5" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="Deadline_dt" Type="Edm.DateTime" sap:display-format="Date" sap:label="Quotation Deadline" sap:quickinfo="Deadline for Submission of Bid/Quotation"/>
+                <Property Name="Published_d" Type="Edm.DateTime" sap:display-format="Date" sap:label="Date" sap:quickinfo="Creation date of the change document"/>
+                <Property Name="CreatedBy" Type="Edm.String" MaxLength="12" sap:display-format="UpperCase" sap:label="Created By" sap:quickinfo="User of person who created a purchasing document"/>
+                <Property Name="Published_t" Type="Edm.Time" sap:label="Time" sap:quickinfo="Time changed"/>
+                <Property Name="VendorName" Type="Edm.String" MaxLength="35" sap:label="Name" sap:quickinfo="Name 1"/>
+                <Property Name="Email" Type="Edm.String" MaxLength="241" sap:label="E-Mail Address"/>
+                <Property Name="VendorAccgrp" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Account group" sap:quickinfo="Vendor account group"/>
+                <Property Name="VendorAccgrpName" Type="Edm.String" MaxLength="30" sap:label="Name" sap:quickinfo="Account Group Name"/>
+                <Property Name="TargetValue" Type="Edm.Decimal" Precision="15" Scale="3" sap:unit="PriceUnit" sap:variable-scale="true" sap:label="Target Value" sap:quickinfo="Target Value for Header Area per Distribution"/>
+                <Property Name="Status" Type="Edm.String" MaxLength="9"/>
+                <Property Name="PymentDesc" Type="Edm.String" MaxLength="30" sap:label="Description" sap:quickinfo="Description of terms of payment"/>
+                <Property Name="Published_d_t" Type="Edm.String" MaxLength="15"/>
+            </EntityType>
+            <EntityType Name="ZC_AISP_RFQ_ITEM" sap:content-version="1" sap:label="Consumption View for RFQ Item">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                    <PropertyRef Name="ItemNumber"/>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" MaxLength="10" Nullable="false" sap:display-format="UpperCase" sap:label="Purchasing Document" sap:quickinfo="Purchasing Document Number"/>
+                <Property Name="ItemNumber" Type="Edm.String" MaxLength="5" Nullable="false" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Item Number of Purchasing Document"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10" Nullable="false" sap:display-format="UpperCase" sap:label="Ref. to suplr" sap:quickinfo="Reference to other supplier"/>
+                <Property Name="MaterialNo" Type="Edm.String" MaxLength="18" sap:display-format="UpperCase" sap:label="Material" sap:quickinfo="Material Number"/>
+                <Property Name="MaterialDesc" Type="Edm.String" MaxLength="40" sap:label="Short Text"/>
+                <Property Name="LotType" Type="Edm.String" MaxLength="30"/>
+                <Property Name="UnitOfMeasure" Type="Edm.String" MaxLength="3" sap:label="Order Unit" sap:quickinfo="Purchase Order Unit of Measure" sap:semantics="unit-of-measure"/>
+                <Property Name="Currency" Type="Edm.String" MaxLength="5" sap:label="Currency" sap:quickinfo="Currency Key" sap:semantics="currency-code"/>
+                <Property Name="PlantAddress" Type="Edm.String" MaxLength="157"/>
+                <Property Name="Quantity" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Scheduled Quantity"/>
+                <Property Name="Plant" Type="Edm.String" MaxLength="4" sap:display-format="UpperCase" sap:label="Plant"/>
+                <Property Name="Netpr" Type="Edm.Decimal" Precision="11" Scale="3" sap:unit="Currency" sap:variable-scale="true" sap:label="Net Order Price" sap:quickinfo="Net Price in Purchasing Document (in Document Currency)"/>
+                <Property Name="Netwr" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="Currency" sap:variable-scale="true" sap:label="Net Order Value" sap:quickinfo="Net Order Value in PO Currency"/>
+                <Property Name="basic_longtext" Type="Edm.String" MaxLength="1200" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="ZC_AISP_RFQ_WORK_HDR">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="CompanyCode" Type="Edm.String" MaxLength="4"/>
+                <Property Name="DocumentType" Type="Edm.String" MaxLength="2"/>
+                <Property Name="PurchasingOrg" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PurchasingGroup" Type="Edm.String" MaxLength="3"/>
+                <Property Name="DocumentDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="PriceUnit" Type="Edm.String" MaxLength="3"/>
+                <Property Name="Deadline_dt" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="Published_d" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="CreatedBy" Type="Edm.String" MaxLength="20"/>
+                <Property Name="Published_t" Type="Edm.Time"/>
+                <Property Name="VendorName" Type="Edm.String" MaxLength="100"/>
+                <Property Name="Email" Type="Edm.String" MaxLength="100"/>
+                <Property Name="VendorAccgrp" Type="Edm.String" MaxLength="4"/>
+                <Property Name="VendorAccgrpName" Type="Edm.String" MaxLength="50"/>
+                <Property Name="TargetValue" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="Status" Type="Edm.String"/>
+                <Property Name="PymentDesc" Type="Edm.String" MaxLength="100"/>
+                <Property Name="Published_d_t" Type="Edm.String" MaxLength="50"/>
+                <Property Name="CREATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="LAST_UPDATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="Additional_Charge_Present" Type="Edm.Boolean"/>
+                <Property Name="Additional_Charges" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges)" Nullable="false"/>
+                <Property Name="Remarks" Type="Edm.String"/>
+                <Property Name="Additional_Attachment_Present" Type="Edm.Boolean"/>
+                <Property Name="Additional_Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment)" Nullable="false"/>
+                <Property Name="ResponseStatus" Type="Edm.String"/>
+                <Property Name="AttachmentStatus" Type="Edm.String"/>
+            </EntityType>
+            <EntityType Name="ZC_AISP_RFQ_WORK_ITEM">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                    <PropertyRef Name="ItemNumber"/>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+                <Property Name="ItemNumber" Type="Edm.String" MaxLength="5" Nullable="false"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="MaterialNo" Type="Edm.String" MaxLength="18"/>
+                <Property Name="MaterialDesc" Type="Edm.String" MaxLength="100"/>
+                <Property Name="LotType" Type="Edm.String" MaxLength="50"/>
+                <Property Name="UnitOfMeasure" Type="Edm.String" MaxLength="3"/>
+                <Property Name="Currency" Type="Edm.String" MaxLength="3"/>
+                <Property Name="PlantAddress" Type="Edm.String" MaxLength="200"/>
+                <Property Name="Quantity" Type="Edm.Decimal" Precision="15" Scale="3"/>
+                <Property Name="Plant" Type="Edm.String" MaxLength="4"/>
+                <Property Name="Netpr" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="Netwr" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="basic_longtext" Type="Edm.String" MaxLength="5000"/>
+                <Property Name="TOTAL_PRICE" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="CREATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="LAST_UPDATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="Confirmation_Status" Type="Edm.Boolean"/>
+            </EntityType>
+            <EntityType Name="SupplierPreReqQstns">
+                <Key>
+                    <PropertyRef Name="QUESTION_ID"/>
+                </Key>
+                <Property Name="QUESTION_ID" Type="Edm.String" Nullable="false"/>
+                <Property Name="ACCOUNT_GROUP" Type="Edm.String"/>
+                <Property Name="QUESTION_TEXT" Type="Edm.String"/>
+                <Property Name="QUESTION_TYPE" Type="Edm.String"/>
+                <Property Name="IS_MANDATORY" Type="Edm.Boolean"/>
+                <Property Name="DROPDOWN_VALUES" Type="Edm.String"/>
+                <Property Name="SECTION" Type="Edm.String"/>
+                <Property Name="ORDER" Type="Edm.Int32"/>
+                <Property Name="IS_ACTIVE" Type="Edm.Boolean"/>
+            </EntityType>
+            <EntityType Name="SupplierResponses">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+                <Property Name="Bidder" Type="Edm.String"/>
+                <Property Name="ACCOUNT_GROUP" Type="Edm.String"/>
+                <Property Name="RESPONSES" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponse)" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="SupplierPreReqAttchmnts">
+                <Key>
+                    <PropertyRef Name="DOCUMENT_ID"/>
+                </Key>
+                <Property Name="DOCUMENT_ID" Type="Edm.String" Nullable="false"/>
+                <Property Name="FILE_NAME" Type="Edm.String"/>
+                <Property Name="ACCOUNT_GROUP" Type="Edm.String"/>
+                <Property Name="DESCRIPTION" Type="Edm.String"/>
+                <Property Name="UPLOAD_DATE" Type="Edm.DateTimeOffset"/>
+            </EntityType>
+            <EntityType Name="SupplierAttachments">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+                <Property Name="Bidder" Type="Edm.String"/>
+                <Property Name="ACCOUNT_GROUP" Type="Edm.String"/>
+                <Property Name="Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="ZC_AISP_RFQ_DRAFT">
+                <Property Name="RfqNumber" Type="Edm.String"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10"/>
+                <Property Name="CompanyCode" Type="Edm.String" MaxLength="4"/>
+                <Property Name="DocumentType" Type="Edm.String" MaxLength="2"/>
+                <Property Name="PurchasingOrg" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PurchasingGroup" Type="Edm.String" MaxLength="3"/>
+                <Property Name="DocumentDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="PriceUnit" Type="Edm.String" MaxLength="3"/>
+                <Property Name="Deadline_dt" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="Published_d" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="CreatedBy" Type="Edm.String" MaxLength="20"/>
+                <Property Name="Published_t" Type="Edm.Time"/>
+                <Property Name="VendorName" Type="Edm.String" MaxLength="100"/>
+                <Property Name="Email" Type="Edm.String" MaxLength="100"/>
+                <Property Name="VendorAccgrp" Type="Edm.String" MaxLength="4"/>
+                <Property Name="VendorAccgrpName" Type="Edm.String" MaxLength="50"/>
+                <Property Name="TargetValue" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="Status" Type="Edm.String"/>
+                <Property Name="PymentDesc" Type="Edm.String" MaxLength="100"/>
+                <Property Name="Published_d_t" Type="Edm.String" MaxLength="50"/>
+                <Property Name="CREATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="LAST_UPDATED_ON" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="Additional_Charge_Present" Type="Edm.Boolean"/>
+                <Property Name="Additional_Charges" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges)" Nullable="false"/>
+                <Property Name="Remarks" Type="Edm.String"/>
+                <Property Name="Additional_Attachment_Present" Type="Edm.Boolean"/>
+                <Property Name="Additional_Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment)" Nullable="false"/>
+                <Property Name="items" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems)" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="RFQ_status">
+                <Key>
+                    <PropertyRef Name="Status"/>
+                </Key>
+                <Property Name="Status" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <ComplexType Name="Attachments">
+                <Property Name="AttachmentName" Type="Edm.String" MaxLength="20"/>
+                <Property Name="AttachmentURL" Type="Edm.String"/>
+            </ComplexType>
+            <ComplexType Name="Additional_Charges">
+                <Property Name="Charge_Name" Type="Edm.String"/>
+                <Property Name="Charge_Price" Type="Edm.Int32"/>
+                <Property Name="Charge_Unit" Type="Edm.String"/>
+            </ComplexType>
+            <ComplexType Name="Additional_Attachment">
+                <Property Name="DOCUMENT_ID" Type="Edm.String"/>
+                <Property Name="FILE_NAME" Type="Edm.String"/>
+                <Property Name="DESCRIPTION" Type="Edm.String"/>
+                <Property Name="FILE_URL" Type="Edm.String"/>
+            </ComplexType>
+            <ComplexType Name="SupplierResponse">
+                <Property Name="QUESTION_ID" Type="Edm.String"/>
+                <Property Name="RESPONSE_TEXT" Type="Edm.String"/>
+            </ComplexType>
+            <ComplexType Name="AttachmentResponse">
+                <Property Name="DOCUMENT_ID" Type="Edm.String"/>
+                <Property Name="FILE_NAME" Type="Edm.String"/>
+                <Property Name="DESCRIPTION" Type="Edm.String"/>
+                <Property Name="FILE_URL" Type="Edm.String"/>
+                <Property Name="IS_PRESENT" Type="Edm.Boolean"/>
+                <Property Name="REASON_FOR_ABSENCE" Type="Edm.String"/>
+            </ComplexType>
+            <ComplexType Name="DraftItems">
+                <Property Name="RfqNumber" Type="Edm.String"/>
+                <Property Name="ItemNumber" Type="Edm.String" MaxLength="5"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10"/>
+                <Property Name="Netpr" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="Netwr" Type="Edm.Decimal" Precision="15" Scale="2"/>
+            </ComplexType>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Attachments/AttachmentName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Attachment Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Attachments/AttachmentURL" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Attachment URL"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges/Charge_Name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Charge Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges/Charge_Price" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Charge Price"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Charges/Charge_Unit" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Charge Unit"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment/DOCUMENT_ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment/FILE_NAME" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="File Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment/DESCRIPTION" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.Additional_Attachment/FILE_URL" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="File URL"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponse/QUESTION_ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Question ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponse/RESPONSE_TEXT" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Response Text"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse/DOCUMENT_ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse/FILE_NAME" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="File Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse/DESCRIPTION" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse/FILE_URL" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="File URL"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems/ItemNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Item Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems/Netpr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Price"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.DraftItems/Netwr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.EntityContainer/ZC_AISP_RFQ_HDR" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/CompanyCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Company Code"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/DocumentType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/PurchasingOrg" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Org"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/PurchasingGroup" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/DocumentDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/PriceUnit" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Price Unit"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Deadline_dt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Deadline Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Published_d" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/CreatedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Published_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Time"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/VendorName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Email" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Email"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/VendorAccgrp" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/VendorAccgrpName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/TargetValue" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Target Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Status"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/PymentDesc" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Payment Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_HDR/Published_d_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Date Time"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.EntityContainer/ZC_AISP_RFQ_ITEM" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/ItemNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Item Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/MaterialNo" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Material Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/MaterialDesc" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Material Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/LotType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Lot Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/UnitOfMeasure" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Unit of Measure"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Currency"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/PlantAddress" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Plant Address"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Quantity" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Quantity"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Plant" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Plant"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Netpr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Price"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/Netwr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_ITEM/basic_longtext" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Basic Longtext"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/CompanyCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Company Code"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/DocumentType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/PurchasingOrg" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Organization"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/PurchasingGroup" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/DocumentDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/PriceUnit" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Price Unit"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Deadline_dt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Deadline Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Published_d" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/CreatedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Published_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Time"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/VendorName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vnedor Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Email" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Email ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/VendorAccgrp" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/VendorAccgrpName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/TargetValue" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Target Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Status"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Accepted"/>
+                            <PropertyValue Property="Value" String="Accepted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Not_Accepted"/>
+                            <PropertyValue Property="Value" String="Not_Accepted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Submitted"/>
+                            <PropertyValue Property="Value" String="Submitted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Awarded"/>
+                            <PropertyValue Property="Value" String="Awarded"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/PymentDesc" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Payment Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Published_d_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Datetime"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/CREATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/LAST_UPDATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Last Updated On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Additional_Charge_Present" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Charges Present"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Additional_Charges" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Charges"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Remarks" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Remarks"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Additional_Attachment_Present" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Attachment Present"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/Additional_Attachments" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Attachments"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/ResponseStatus" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Response Status"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Answered"/>
+                            <PropertyValue Property="Value" String="Answered"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Completed"/>
+                            <PropertyValue Property="Value" String="Completed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_HDR/AttachmentStatus" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Response Status"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Answered"/>
+                            <PropertyValue Property="Value" String="Answered"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Completed"/>
+                            <PropertyValue Property="Value" String="Completed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/ItemNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Item Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/MaterialNo" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Material Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/MaterialDesc" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Material Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/LotType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Lot Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/UnitOfMeasure" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Unit of Measure"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Currency"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/PlantAddress" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Plant Address"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Quantity" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Quantity"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Plant" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Plant"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Netpr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Price"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Netwr" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Net Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/basic_longtext" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Basic Longtext"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/TOTAL_PRICE" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Total Price"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/CREATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/LAST_UPDATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Last Updated On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_WORK_ITEM/Confirmation_Status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Confirmation Status"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/QUESTION_ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Question ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/ACCOUNT_GROUP" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/QUESTION_TEXT" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Question Text"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/QUESTION_TYPE" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Question Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/IS_MANDATORY" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Is Mandatory"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/DROPDOWN_VALUES" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Dropdown Values"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/SECTION" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Section"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/ORDER" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Order"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqQstns/IS_ACTIVE" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Is Active"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponses/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponses/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponses/ACCOUNT_GROUP" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierResponses/RESPONSES" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Responses"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts/DOCUMENT_ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts/FILE_NAME" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="File Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts/ACCOUNT_GROUP" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts/DESCRIPTION" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierPreReqAttchmnts/UPLOAD_DATE" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Upload Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments/ACCOUNT_GROUP" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments/Attachments" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Responses"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="RFQ Number"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Bidder" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Bidder"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/CompanyCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Company Code"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/DocumentType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Type"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/PurchasingOrg" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Organization"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/PurchasingGroup" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Purchasing Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/DocumentDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Document Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/PriceUnit" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Price Unit"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Deadline_dt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Deadline Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Published_d" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Date"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/CreatedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Published_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Time"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/VendorName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vnedor Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Email" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Email ID"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/VendorAccgrp" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/VendorAccgrpName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Vendor Account Group Name"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/TargetValue" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Target Value"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Status"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Submitted"/>
+                            <PropertyValue Property="Value" String="Submitted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Awarded"/>
+                            <PropertyValue Property="Value" String="Awarded"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Accepted"/>
+                            <PropertyValue Property="Value" String="Accepted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Not_Accepted"/>
+                            <PropertyValue Property="Value" String="Not_Accepted"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/PymentDesc" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Payment Description"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Published_d_t" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Published Datetime"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/CREATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/LAST_UPDATED_ON" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Last Updated On"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Additional_Charge_Present" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Charges Present"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Additional_Charges" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Charges"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Remarks" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Remarks"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Additional_Attachment_Present" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Attachment Present"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/Additional_Attachments" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Additional Attachments"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.EntityContainer/setRFQStatus/Action" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="accept"/>
+                            <PropertyValue Property="Value" String="accept"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="reject"/>
+                            <PropertyValue Property="Value" String="reject"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.EntityContainer/changeRFQStatus/NewStatus" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Awarded"/>
+                            <PropertyValue Property="Value" String="Awarded"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

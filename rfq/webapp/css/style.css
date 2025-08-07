@@ -1,0 +1,27 @@
+/* Enter your custom styles here *//* Enter your custom styles here */
+html,
+body {
+  overflow-y: hidden;
+}
+
+.sapUiCountdownHighlight {
+  background-color: #FDEDEC;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+/* Big bold number */
+.countdownNumber {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Smaller, faded unit label */
+.countdownUnit {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  line-height: 1.2;
+}

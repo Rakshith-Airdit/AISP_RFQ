@@ -1,0 +1,47 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+>
+    <Dialog
+        id="rejectRFQDialog"
+        title="Reject RFQ"
+        type="Message"
+        contentWidth="40rem"
+        stretch="{device>/system/phone}"
+    >
+        <content>
+            <l:VerticalLayout
+                class="sapUiContentPadding"
+                width="100%"
+            >
+                <Label
+                    text="Please enter a reason for rejection"
+                    labelFor="rejectReasonInput"
+                />
+                <TextArea
+                    id="rejectReasonInput"
+                    width="100%"
+                    placeholder="Rejection reason (required)"
+                    rows="4"
+                    liveChange=".onRejectReasonChange"
+                />
+            </l:VerticalLayout>
+        </content>
+        <beginButton>
+            <Button
+                id="rejectConfirmBtn"
+                type="Emphasized"
+                text="Reject"
+                enabled="false"
+                press=".onConfirmReject"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cancel"
+                press=".onCancelReject"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

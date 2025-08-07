@@ -1,0 +1,156 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "com.aisp.rfq",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.18.2",
+      "toolsId": "4ceb007c-0ff5-4b21-ac0d-5ee948080133"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v2/zc-aisp-rfq-hdr-bndsample/",
+        "type": "OData",
+        "settings": {
+          "annotations": [
+            "annotation"
+          ],
+          "localUri": "localService/mainService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      },
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "AISP_RFQ-CREATE": {
+          "semanticObject": "AISP_RFQ",
+          "action": "CREATE",
+          "title": "{{AISP_RFQ-CREATE.flpTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.138.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.aisp.rfq.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "com.aisp.rfq.view",
+        "async": true,
+        "viewPath": "com.aisp.rfq.view"
+      },
+      "routes": [
+        {
+          "name": "RouteRFQList",
+          "pattern": "",
+          "target": "TargetRFQList"
+        },
+        {
+          "name": "RouteRFQDetails",
+          "pattern": "rfqdetails/{rfqNum}/{bidder}",
+          "target": "TargetRFQDetails"
+        },
+        {
+          "name": "RouteRFQDraft",
+          "pattern": "rfqdraft/{rfqNum}/{bidder}",
+          "target": "TargetRFQDraft"
+        }
+      ],
+      "targets": {
+        "TargetRFQList": {
+          "id": "RFQList",
+          "name": "RFQList"
+        },
+        "TargetRFQDetails": {
+          "id": "rfqdetails",
+          "name": "RFQDetails"
+        },
+        "TargetRFQDraft": {
+          "id": "rfqdraft",
+          "name": "RFQDraft"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "com.aisp.rfq.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "AISP_RFQ"
+  }
+}

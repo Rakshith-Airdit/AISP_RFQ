@@ -1,0 +1,67 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="addChargeDialog"
+        icon="sap-icon://hint"
+        title="Additional Charges"
+        contentWidth="40rem"
+        contentHeight="auto"
+        stretch="false"
+    >
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <f:SimpleForm
+                    editable="true"
+                    layout="ColumnLayout"
+                    columnsM="2"
+                    columnsL="2"
+                    columnsXL="2"
+                >
+                    <f:content>
+                        <Label
+                            text="Charge Name"
+                            required="true"
+                        />
+                        <Input
+                            id="chargeNameInput"
+                            placeholder="Enter Charge Name"
+                            valueState="{= ${$source>/value} ? 'None' : 'Error' }"
+                            valueStateText="{= ${$source>/value} ? '' : 'Charge Name is required' }"
+                        />
+                        <Label
+                            text="Price"
+                            required="true"
+                        />
+                        <Input
+                            id="priceInput"
+                            placeholder="Enter Price"
+                            type="Number"
+                            valueState="{= ${$source>/value} !== undefined &amp;&amp; !isNaN(parseFloat(${$source>/value})) &amp;&amp; parseFloat(${$source>/value}) >= 0 ? 'None' : 'Error' }"
+                            valueStateText="{= ${$source>/value} !== undefined &amp;&amp; !isNaN(parseFloat(${$source>/value})) &amp;&amp; parseFloat(${$source>/value}) >= 0 ? '' : 'Price must be a non-negative number' }"
+                        />
+                    </f:content>
+                </f:SimpleForm>
+            </VBox>
+        </content>
+        <footer>
+            <Toolbar>
+                <content>
+                    <ToolbarSpacer />
+                    <Button
+                        type="Accept"
+                        text="Save"
+                        press=".onSaveCharge"
+                    />
+                    <Button
+                        text="Cancel"
+                        type="Reject"
+                        press=".onCancelCharge"
+                    />
+                </content>
+            </Toolbar>
+        </footer>
+    </Dialog>
+</core:FragmentDefinition>

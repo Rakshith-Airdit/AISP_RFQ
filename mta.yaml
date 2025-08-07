@@ -1,0 +1,93 @@
+_schema-version: "3.2"
+ID: AISP_RFQ
+version: 0.0.1
+modules:
+- name: AISP_RFQ-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: AISP_RFQ-destination-service
+    parameters:
+      content-target: true
+  - name: AISP_RFQ_html_repo_host
+    parameters:
+      service-key:
+        name: AISP_RFQ_html_repo_host-key
+  - name: uaa_AISP_RFQ
+    parameters:
+      service-key:
+        name: uaa_AISP_RFQ-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: AISP_RFQ_AISP_RFQ_html_repo_host
+          ServiceInstanceName: AISP_RFQ-html5-app-host-service
+          ServiceKeyName: AISP_RFQ_html_repo_host-key
+          sap.cloud.service: AISP_RFQ
+        - Authentication: OAuth2UserTokenExchange
+          Name: AISP_RFQ_uaa_AISP_RFQ
+          ServiceInstanceName: AISP_RFQ-xsuaa-service
+          ServiceKeyName: uaa_AISP_RFQ-key
+          sap.cloud.service: AISP_RFQ
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: AISP_RFQ-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: AISP_RFQ_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comaisprfq.zip
+      name: comaisprfq
+      target-path: resources/
+- name: comaisprfq
+  type: html5
+  path: rfq
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: AISP_RFQ-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: AISP_RFQ-destination-service
+    service-plan: lite
+- name: AISP_RFQ_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: AISP_RFQ-html5-app-host-service
+    service-plan: app-host
+- name: uaa_AISP_RFQ
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: AISP_RFQ-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true

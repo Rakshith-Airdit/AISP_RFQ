@@ -1,0 +1,24 @@
+{
+  "generationParameters": {
+    "generationDate": "Mon Jul 21 2025 06:10:50 GMT+0000 (Coordinated Universal Time)",
+    "generatorPlatform": "SAP Business Application Studio",
+    "serviceType": "SAP System (ABAP On Premise)",
+    "metadataFilename": "",
+    "serviceUrl": "https://airdit-software-services-private-limite-airdit-190920236a7746bd.cfapps.ap10.hana.ondemand.com/odata/v2/zp-aisp-ses-upses-srbsample/",
+    "appName": "rfq",
+    "appTitle": "RFQ Quotation",
+    "appDescription": "An SAP Fiori application.",
+    "appNamespace": "com.aisp",
+    "ui5Theme": "sap_horizon",
+    "ui5Version": "1.138.0",
+    "enableCodeAssist": false,
+    "enableEslint": false,
+    "enableTypeScript": false,
+    "showMockDataInfo": true,
+    "generatorVersion": "1.18.2",
+    "template": "Basic V2",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [],
+    "launchText": "In order to launch the generated app, simply run the following from the generated app root folder:\n\n```\n    npm start\n```"
+  }
+}

@@ -1,0 +1,284 @@
+<mvc:View
+    controllerName="com.aisp.rfq.controller.RFQList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:f="sap.f"
+    xmlns:vm="sap.ui.fl.variants"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+>
+    <Page
+        showHeader="true"
+        showFooter="false"
+        title="RFQ Quotation"
+        titleAlignment="Center"
+    >
+        <smartFilterBar:SmartFilterBar
+            id="smartFilterBar"
+            entitySet="ZC_AISP_RFQ_HDR"
+            persistencyKey="SmartFilter_Explored"
+            considerAnalyticalParameters="true"
+            initialized="initialized"
+            showRestoreButton="true"
+            useToolbar="true"
+            visible="true"
+            showFilterConfiguration="false"
+        >
+            <smartFilterBar:controlConfiguration>
+                <smartFilterBar:ControlConfiguration
+                    key="Published_d"
+                    index="1"
+                    label="Published Date and Time"
+                    visibleInAdvancedArea="true"
+                    filterType="single"
+                    conditionType="{
+                                            module: 'sap.ui.comp.config.condition.DateRangeType'
+                                        }"
+                />
+                <!-- <smartFilterBar:ControlConfiguration
+                    key="Deadline_dt"
+                    index="2"
+                    label="Deadline"
+                    visibleInAdvancedArea="true"
+                    filterType="single"
+                    conditionType="{
+                                            module: 'sap.ui.comp.config.condition.DateRangeType'
+                                        }"
+                /> -->
+            </smartFilterBar:controlConfiguration>
+        </smartFilterBar:SmartFilterBar>
+
+        <smartFilterBar:SmartFilterBar
+            id="smartFilterBarDraft"
+            entitySet="ZC_AISP_RFQ_DRAFT"
+            persistencyKey="SmartTableDraftKey"
+            considerAnalyticalParameters="true"
+            initialized="initialized"
+            showRestoreButton="true"
+            useToolbar="true"
+            visible="false"
+            showFilterConfiguration="false"
+        >
+            <smartFilterBar:controlConfiguration>
+                <smartFilterBar:ControlConfiguration
+                    key="Published_d"
+                    index="1"
+                    label="Published Date and Time"
+                    visibleInAdvancedArea="true"
+                    filterType="single"
+                    conditionType="{module: 'sap.ui.comp.config.condition.DateRangeType'}"
+                />
+            </smartFilterBar:controlConfiguration>
+        </smartFilterBar:SmartFilterBar>
+
+        <IconTabBar
+            id="idIconTabBarMulti"
+            expanded="{device>/isNoPhone}"
+            class="customTabBar"
+            select="onIconTabBarSelect"
+        >
+            <items>
+                <!-- RFQ Events -->
+                <IconTabFilter
+                    key="RFQ-Event"
+                    icon="sap-icon://open-command-field"
+                    text="RFQ Events"
+                >
+                    <smartTable:SmartTable
+                        id="smartTableHDR"
+                        entitySet="ZC_AISP_RFQ_HDR"
+                        smartFilterId="smartFilterBar"
+                        persistencyKey="SmartTableHDRKey"
+                        enableExport="true"
+                        useVariantManagement="true"
+                        useTablePersonalisation="true"
+                        header="List of RFQ Events"
+                        showRowCount="true"
+                        enableAutoBinding="true"
+                        tableType="ResponsiveTable"
+                        demandPopin="true"
+                        enableAutoColumnWidth="false"
+                        beforeExport="onBeforeExport"
+                        requestAtLeastFields="Deadline_dt"
+                        ignoreFromPersonalisation="DocumentType,Email,PurchasingOrg,PurchasingGroup,DocumentDate,PymentDesc,VendorName,TargetValue,PymentDesc,Published_d_t"
+                    >
+                        <Table
+                            id="idTableHDR"
+                            growing="true"
+                            growingThreshold="10"
+                            selectionChange="selectionChangeHandlerHDR"
+                            noDataText="No Data"
+                        >
+                            <columns>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":2}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="RFQ Published Date"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":3}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Time Remaining"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":4}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Status"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem
+                                    type="Navigation"
+                                    press="onRFQListItemPress"
+                                    vAlign="Middle"
+                                >
+                                    <cells>
+                                        <Text
+                                            text="{path:'Published_d', formatter:'.formatDate'}"
+                                        />
+                                        <ProgressIndicator
+                                            class="sapUiSmallMarginBottom"
+                                            percentValue="{path:'Deadline_dt', formatter:'.calculateProgressPercentage'}"
+                                            displayValue="{path:'Deadline_dt', formatter:'.formatTimeRemaining'}"
+                                            showValue="true"
+                                            state="{path:'Deadline_dt', formatter:'.formatTimeRemainingState'}"
+                                            width="300px"
+                                        />
+                                        <ObjectStatus
+                                            text="{Status}"
+                                            state="{path:'Status',formatter:'.formatStatusState'}"
+                                            inverted="true"
+                                            class="noWrapText"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </smartTable:SmartTable>
+                </IconTabFilter>
+
+                <!-- Drafts -->
+                <IconTabFilter
+                    key="Drafts"
+                    icon="sap-icon://edit"
+                    text="Drafts"
+                >
+                    <smartTable:SmartTable
+                        id="smartTableDraft"
+                        entitySet="ZC_AISP_RFQ_DRAFT"
+                        smartFilterId="smartFilterBarDraft"
+                        persistencyKey="SmartTableDraftKey"
+                        enableExport="true"
+                        useVariantManagement="true"
+                        useTablePersonalisation="true"
+                        header="List of RFQ Drafts"
+                        showRowCount="true"
+                        enableAutoBinding="true"
+                        tableType="ResponsiveTable"
+                        demandPopin="true"
+                        enableAutoColumnWidth="true"
+                        beforeExport="onBeforeExport"
+                        beforeRebindTable="onBeforeRebindTable"
+                        requestAtLeastFields="Deadline_dt"
+                        ignoreFromPersonalisation="DocumentType,Email,PurchasingOrg,PurchasingGroup,DocumentDate,PymentDesc,VendorName,TargetValue,PymentDesc,Published_d_t"
+                    >
+                        <Table
+                            id="idTableDraft"
+                            growing="true"
+                            growingThreshold="10"
+                            selectionChange="selectionChangeHandlerDraft"
+                        >
+                            <columns>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":2}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="RFQ Published Date"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":3}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Time Remaining"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                                <Column>
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":4}'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Status"
+                                        wrapping="false"
+                                    />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem
+                                    type="Navigation"
+                                    press="onDraftItemPress"
+                                    vAlign="Middle"
+                                >
+                                    <cells>
+                                        <Text
+                                            text="{path:'Published_d', formatter:'.formatDate'}"
+                                        />
+                                        <ProgressIndicator
+                                            class="sapUiSmallMarginBottom"
+                                            percentValue="{path:'Deadline_dt', formatter:'.calculateProgressPercentage'}"
+                                            displayValue="{path:'Deadline_dt', formatter:'.formatTimeRemaining'}"
+                                            showValue="true"
+                                            state="{path:'Deadline_dt', formatter:'.formatTimeRemainingState'}"
+                                            width="300px"
+                                        />
+                                        <ObjectStatus
+                                            text="{Status}"
+                                            state="{path:'Status',formatter:'.formatStatusState'}"
+                                            inverted="true"
+                                            class="noWrapText"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </smartTable:SmartTable>
+                </IconTabFilter>
+            </items>
+        </IconTabBar>
+    </Page>
+</mvc:View>
