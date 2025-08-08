@@ -268,11 +268,39 @@
                                                     level="H4"
                                                 />
                                                 <m:ToolbarSpacer />
-                                                <m:SearchField
+                                                <!-- <m:SearchField
                                                     width="20rem"
                                                     placeholder="Search…"
                                                     liveChange=".onSearchRFQEvents"
+                                                /> -->
+
+                                                <m:Button
+                                                    icon="sap-icon://excel-attachment"
+                                                    press="onExcelExport"
                                                 />
+                                                <!-- <m:MenuButton
+                                                    icon="sap-icon://excel-attachment"
+                                                    buttonMode="Split"
+                                                    useDefaultActionOnly="true"
+                                                    defaultAction="onExcelExport"
+                                                >
+                                                    <m:menu>
+                                                        <m:Menu
+                                                            itemSelected="onMenuAction"
+                                                        >
+                                                            <m:MenuItem
+                                                                text="Export as Excel"
+                                                                icon="sap-icon://excel-attachment"
+                                                                press="onExcelExport"
+                                                            />
+                                                            <m:MenuItem
+                                                                text="Export as PDF"
+                                                                icon="sap-icon://pdf-attachment"
+                                                                press="onPDFExport"
+                                                            />
+                                                        </m:Menu>
+                                                    </m:menu>
+                                                </m:MenuButton> -->
                                             </m:Toolbar>
                                         </m:headerToolbar>
                                         <m:columns>

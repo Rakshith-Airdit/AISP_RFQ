@@ -6,6 +6,9 @@ sap.ui.define([
   "sap/m/MessageBox",
   "sap/m/MessageToast",
   "sap/ui/core/Fragment",
+  "sap/ui/export/Spreadsheet",
+  "sap/ui/export/library",
+  "sap/ui/export/ExportHandler",
 ], function (
   Controller,
   Filter,
@@ -14,6 +17,9 @@ sap.ui.define([
   MessageBox,
   MessageToast,
   Fragment,
+  Spreadsheet,
+  library,
+  ExportHandler
 ) {
   "use strict";
 
@@ -1358,6 +1364,100 @@ sap.ui.define([
       });
       oWorkItemsModel.setProperty("/results", aItems);
     },
+
+    createColumnConfig: function () {
+      const EdmType = library.EdmType;
+
+      return [
+        { label: "RFQ Number", property: "RfqNumber", type: EdmType.String },
+        { label: "Item Number", property: "ItemNumber", type: EdmType.String },
+        { label: "Bidder", property: "Bidder", type: EdmType.String },
+        { label: "Material No", property: "MaterialNo", type: EdmType.String },
+        { label: "Material Description", property: "MaterialDesc", type: EdmType.String },
+        { label: "Lot Type", property: "LotType", type: EdmType.String },
+        { label: "Unit of Measure", property: "UnitOfMeasure", type: EdmType.String },
+        { label: "Currency", property: "Currency", type: EdmType.String },
+        { label: "Plant Address", property: "PlantAddress", type: EdmType.String },
+        { label: "Quantity", property: "Quantity", type: EdmType.Number, scale: 2 },
+        { label: "Plant", property: "Plant", type: EdmType.String },
+        { label: "Net Price", property: "Netpr", type: EdmType.Number, scale: 2 },
+        { label: "Net Worth", property: "Netwr", type: EdmType.Number, scale: 2 },
+        { label: "Long Text", property: "basic_longtext", type: EdmType.String }
+      ];
+    },
+
+
+    onExcelExport: function (oEvent) {
+      const oTable = this.getView().byId("rfqEventsTable");
+      const oRowBinding = oTable.getBinding("items");
+      const aCols = this.createColumnConfig();
+
+      const oSettings = {
+        workbook: {
+          columns: aCols,
+          hierarchyLevel: "Level"
+        },
+        dataSource: oRowBinding,
+        fileName: "Table export sample.xlsx",
+        worker: false // We need to disable worker because we are using a MockServer as OData Service
+      };
+
+      const oSheet = new Spreadsheet(oSettings);
+
+      oSheet.build().finally(function () {
+        oSheet.destroy();
+      });
+    },
+
+    onPDFExport: function () {
+      const oTable = this.byId("rfqEventsTable");
+
+      const oExportSettings = {
+        workbook: {
+          columns: [
+            { label: "S.No", property: "ItemNumber" },
+            { label: "Material Code", property: "MaterialNo" },
+            { label: "Description", property: "MaterialDesc" },
+            { label: "Quantity", property: "Quantity" },
+            { label: "Specification", property: "basic_longtext" }
+          ]
+        },
+        dataSource: {
+          type: "binding",
+          model: this.getView().getModel("oItemsModel"),  // Ensure model is set correctly
+          path: "/results"  // Path to your data
+        },
+        fileName: "RFQ_Export.pdf"
+      };
+
+      let oExportHandler = new ExportHandler(oTable);
+
+      // Trigger the export
+      oExportHandler.export("pdf", oExportSettings).then(function () {
+        console.log("PDF Export completed successfully.");
+      }).catch(function (error) {
+        console.error("Export failed:", error);
+      });
+    },
+
+    // onPDFExport: function () {
+    //   const oTable = this.byId("rfqEventsTable");
+    //   const oRowBinding = oTable.getBinding("items");
+    //   const aCols = this.createColumnConfig();
+    //   let oExportHandler = new ExportHandler(oTable);
+
+    //   oExportHandler.export("pdf", {
+    //     workbook: {
+    //       columns: aCols
+    //     },
+    //     dataSource: {
+    //       type: "binding",
+    //       model: this.getView().getModel("oItemsModel"),
+    //       path: "/results"
+    //     },
+    //     fileName: "RFQ_Events.pdf"
+    //   });
+    // },
 
     /* === ADDITIONAL CHARGES === */
     onAddAdditionalCharges: function () {
