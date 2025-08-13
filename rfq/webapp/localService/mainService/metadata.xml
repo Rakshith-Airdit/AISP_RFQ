@@ -25,6 +25,10 @@
                 <EntitySet Name="SupplierAttachments" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments"/>
                 <EntitySet Name="ZC_AISP_RFQ_DRAFT" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT"/>
                 <EntitySet Name="RFQ_status" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.RFQ_status"/>
+                <EntitySet Name="VH_RfqNumber" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.VH_RfqNumber"/>
+                <EntitySet Name="VH_RfqNumber_Draft" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.VH_RfqNumber_Draft"/>
+                <EntitySet Name="VH_Bidder_Draft" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.VH_Bidder_Draft"/>
+                <EntitySet Name="VH_Bidder" EntityType="ZC_AISP_RFQ_HDR_BNDSampleService.VH_Bidder"/>
                 <FunctionImport Name="setRFQStatus" ReturnType="Edm.String" m:HttpMethod="POST">
                     <Parameter Name="RfqNumber" Type="Edm.String" Mode="In" Nullable="true"/>
                     <Parameter Name="Bidder" Type="Edm.String" Mode="In" Nullable="true"/>
@@ -233,8 +237,12 @@
                 <Property Name="Attachments" Type="Collection(ZC_AISP_RFQ_HDR_BNDSampleService.AttachmentResponse)" Nullable="false"/>
             </EntityType>
             <EntityType Name="ZC_AISP_RFQ_DRAFT">
-                <Property Name="RfqNumber" Type="Edm.String"/>
-                <Property Name="Bidder" Type="Edm.String" MaxLength="10"/>
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+                <Property Name="Bidder" Type="Edm.String" MaxLength="10" Nullable="false"/>
                 <Property Name="CompanyCode" Type="Edm.String" MaxLength="4"/>
                 <Property Name="DocumentType" Type="Edm.String" MaxLength="2"/>
                 <Property Name="PurchasingOrg" Type="Edm.String" MaxLength="4"/>
@@ -267,6 +275,30 @@
                     <PropertyRef Name="Status"/>
                 </Key>
                 <Property Name="Status" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="VH_RfqNumber">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="VH_RfqNumber_Draft">
+                <Key>
+                    <PropertyRef Name="RfqNumber"/>
+                </Key>
+                <Property Name="RfqNumber" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="VH_Bidder_Draft">
+                <Key>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="Bidder" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="VH_Bidder">
+                <Key>
+                    <PropertyRef Name="Bidder"/>
+                </Key>
+                <Property Name="Bidder" Type="Edm.String" Nullable="false"/>
             </EntityType>
             <ComplexType Name="Attachments">
                 <Property Name="AttachmentName" Type="Edm.String" MaxLength="20"/>
@@ -768,6 +800,13 @@
             </Annotations>
             <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.SupplierAttachments/Attachments" xmlns="http://docs.oasis-open.org/odata/ns/edm">
                 <Annotation Term="Common.Label" String="Responses"/>
+            </Annotations>
+            <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.EntityContainer/ZC_AISP_RFQ_DRAFT" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="true"/>
+                    </Record>
+                </Annotation>
             </Annotations>
             <Annotations Target="ZC_AISP_RFQ_HDR_BNDSampleService.ZC_AISP_RFQ_DRAFT/RfqNumber" xmlns="http://docs.oasis-open.org/odata/ns/edm">
                 <Annotation Term="Common.Label" String="RFQ Number"/>

@@ -155,7 +155,11 @@
                         </m:HBox>
                     </m:VBox>
                     <m:VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
-                        <m:HBox>
+                        <m:HBox
+                            alignItems="Center"
+                            wrap="NoWrap"
+                            class="sapUiTinyMarginBottom"
+                        >
                             <m:Label
                                 text="Status:"
                                 class="sapUiTinyMarginEnd sapUiLabelBold"
@@ -167,6 +171,19 @@
                                     parts: [{path: 'oWorkHeaderModel>/results/0/Status'}],
                                     formatter: '.formatStatusState'
                                 }"
+                            />
+                        </m:HBox>
+                        <m:HBox>
+                            <m:Label
+                                text="Quotation No:"
+                                visible="{= !!${oWorkHeaderModel>/results/0/SupplierQuotation} }"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:ObjectStatus
+                                text="{oWorkHeaderModel>/results/0/SupplierQuotation}"
+                                visible="{= !!${oWorkHeaderModel>/results/0/SupplierQuotation} }"
+                                state="Success"
+                                icon="sap-icon://sys-enter-2"
                             />
                         </m:HBox>
                     </m:VBox>
@@ -528,7 +545,7 @@
                                         columns="2"
                                         selectedIndex="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' ? 0 : 1 }"
                                         select=".onRadioButtonSelect"
-                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} === 'editing' }"
                                     >
                                         <m:buttons>
                                             <m:RadioButton text="Manual" />
@@ -557,14 +574,14 @@
                                         maximumFileSize="2"
                                         fileSizeExceed="onFileSizeExceed"
                                         multiple="false"
-                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${oSelectedOptionModel>/selectedOption} === 'Excel Upload' &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} === 'editing' }"
                                     />
                                     <m:Button
                                         text="Download Template"
                                         icon="sap-icon://download"
                                         iconFirst="false"
                                         press=".onDownloadTemplate"
-                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${oSelectedOptionModel>/selectedOption} === 'Excel Upload' &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} === 'editing' }"
                                     />
                                 </m:Toolbar>
 
@@ -1131,7 +1148,7 @@
                     press="_navigateToList"
                 />
                 <m:Button
-                    text="Submit RFQ"
+                    text="Submit Quotation"
                     type="Success"
                     press=".onSubmitRFQ"
                     visible="{uiState>/buttons/submit/visible}"

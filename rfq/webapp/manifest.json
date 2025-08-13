@@ -20,7 +20,9 @@
         "uri": "/odata/v2/zc-aisp-rfq-hdr-bndsample/",
         "type": "OData",
         "settings": {
-          "annotations": ["annotation"],
+          "annotations": [
+            "annotation"
+          ],
           "localUri": "localService/mainService/metadata.xml",
           "odataVersion": "2.0"
         }

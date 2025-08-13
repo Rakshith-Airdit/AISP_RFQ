@@ -156,19 +156,37 @@
                             />
                         </m:HBox>
                     </m:VBox>
-                    <m:VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
-                        <m:HBox>
+                    <m:VBox class="sapUiSmallMarginEnd">
+                        <m:HBox
+                            alignItems="Center"
+                            wrap="NoWrap"
+                            class="sapUiTinyMarginBottom"
+                        >
                             <m:Label
                                 text="Status:"
-                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                                class="sapUiTinyMarginEnd"
                             />
                             <m:ObjectStatus
                                 text="{oHeaderModel>/results/0/Status}"
                                 inverted="true"
                                 state="{
-                                    parts: [{path: 'oHeaderModel>/results/0/Status'}],
+                                    parts: [{ path: 'oHeaderModel>/results/0/Status' }],
                                     formatter: '.formatStatusState'
                                 }"
+                            />
+                        </m:HBox>
+
+                        <m:HBox>
+                            <m:Label
+                                text="Quotation No:"
+                                visible="{= !!${oWorkHeaderModel>/results/0/SupplierQuotation} }"
+                                class="sapUiTinyMarginEnd sapUiLabelBold"
+                            />
+                            <m:ObjectStatus
+                                text="{oWorkHeaderModel>/results/0/SupplierQuotation}"
+                                visible="{= !!${oWorkHeaderModel>/results/0/SupplierQuotation} }"
+                                state="Success"
+                                icon="sap-icon://sys-enter-2"
                             />
                         </m:HBox>
                     </m:VBox>
@@ -561,7 +579,7 @@
                                         columns="2"
                                         selectedIndex="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' ? 0 : 1 }"
                                         select=".onRadioButtonSelect"
-                                        enabled="{uiState>/sections/createQuotation/enabled}"
+                                        enabled="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
                                     >
                                         <m:buttons>
                                             <m:RadioButton text="Manual" />
@@ -649,7 +667,9 @@
                                                 />
                                             </m:Column>
                                             <m:Column>
-                                                <m:Text text="Total Price" />
+                                                <m:Text
+                                                    text="Total Price -INR"
+                                                />
                                             </m:Column>
                                         </m:columns>
                                         <m:items>
@@ -1384,7 +1404,7 @@
                     enabled="{uiState>/buttons/confirm/enabled}"
                 />
                 <m:Button
-                    text="Submit RFQ"
+                    text="Submit Quotation"
                     type="Success"
                     press=".onSubmitRFQ"
                     visible="{uiState>/buttons/submit/visible}"

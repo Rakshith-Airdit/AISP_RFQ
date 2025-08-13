@@ -901,6 +901,10 @@ sap.ui.define([
     },
 
     onRevisePreRequisite: function () {
+      // if (!this._validatePreRequisites(aQuestions, aAttachments)) {
+      //   return;
+      // }
+
       const oUIState = this.getView().getModel("uiState").getData();
 
       oUIState.buttons.updatePreRequisite.visible = true;
@@ -920,6 +924,10 @@ sap.ui.define([
     },
 
     onReviseQuotation: function () {
+      // if (!this._validateQuotation()) {
+      //   return;
+      // }
+
       const oUIState = this.getView().getModel("uiState").getData();
 
       oUIState.buttons.updateQuotation.visible = true;
@@ -1023,18 +1031,39 @@ sap.ui.define([
     _updateRFQStatus: function (sAction, sNewStatus) {
       this._setBusy(true);
       const oHeaderModel = this.getView().getModel("oHeaderModel");
+      const oWorkHeaderModel = this.getView().getModel("oWorkHeaderModel");
       const oModel = this.getView().getModel();
       const { RfqNumber, Bidder } = oHeaderModel.getProperty("/results/0");
+      const oView = this.getView();
 
       try {
         oModel.callFunction("/setRFQStatus", {
           method: "POST",
           urlParameters: { RfqNumber, Bidder, Action: sAction },
-          success: () => {
+          success: async (oData) => {
+            let res = JSON.parse(oData.setRFQStatus)
+            const { message, SupplierQuotation } = res;
+
+            if (SupplierQuotation) {
+              // oWorkHeaderModel.setProperty("/results/0/SupplierQuotation", SupplierQuotation);
+              // oWorkHeaderModel.refresh(true);
+              let aFilters = [
+                new Filter("RfqNumber", FilterOperator.EQ, RfqNumber),
+                new Filter("Bidder", FilterOperator.EQ, Bidder)
+              ]
+
+              await Promise.all([
+                this._loadEntity("/ZC_AISP_RFQ_WORK_HDR", aFilters, "oWorkHeaderModel"),
+                this._loadEntity("/ZC_AISP_RFQ_WORK_ITEM", aFilters, "oWorkItemsModel")
+              ]);
+            }
+
             oHeaderModel.setProperty("/results/0/Status", sNewStatus);
             oHeaderModel.refresh(true);
             this._updateUIState(sNewStatus);
+            // oView.rerender()
             MessageToast.show(`RFQ ${sAction}ed successfully`);
+            // this._showConfirm(message)
             this._setBusy(false);
           },
           error: oError => {
@@ -1824,6 +1853,10 @@ sap.ui.define([
         },
         styleClass: oOptions.styleClass || ""
       });
+    },
+
+    _showSuccess: function (sMessage = "Operation completed successfully.") {
+      MessageBox.success(sMessage);
     },
 
     _showError: function (sMessage = "Something went wrong, Please Try Again After Sometime") {

@@ -41,7 +41,6 @@
                     <Collection>
                         <PropertyPath>RfqNumber</PropertyPath>
                         <PropertyPath>Bidder</PropertyPath>
-                        <PropertyPath>Status</PropertyPath>
                     </Collection>
                 </Annotation>
                 <Annotation Term="UI.LineItem">
@@ -58,10 +57,44 @@
                 </Annotation>
             </Annotations>
 
-            <Annotations Target="SAP.ZC_AISP_RFQ_HDR/RfqNumber">
+            <!-- <Annotations Target="SAP.ZC_AISP_RFQ_HDR/RfqNumber">
                 <Annotation Term="Common.ValueList">
                     <Record Type="Common.ValueListType">
                         <PropertyValue Property="CollectionPath" String="ZC_AISP_RFQ_HDR" />
+                        <PropertyValue Property="SearchSupported" Bool="true" />
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="RfqNumber" />
+                                    <PropertyValue Property="ValueListProperty" String="RfqNumber" />
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations> -->
+
+            <!-- <Annotations Target="SAP.ZC_AISP_RFQ_HDR/Bidder">
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="ZC_AISP_RFQ_HDR" />
+                        <PropertyValue Property="SearchSupported" Bool="true" />
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="Bidder" />
+                                    <PropertyValue Property="ValueListProperty" String="Bidder" />
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations> -->
+
+            <Annotations Target="SAP.ZC_AISP_RFQ_HDR/RfqNumber">
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="VH_RfqNumber" />
                         <PropertyValue Property="SearchSupported" Bool="true" />
                         <PropertyValue Property="Parameters">
                             <Collection>
@@ -78,7 +111,7 @@
             <Annotations Target="SAP.ZC_AISP_RFQ_HDR/Bidder">
                 <Annotation Term="Common.ValueList">
                     <Record Type="Common.ValueListType">
-                        <PropertyValue Property="CollectionPath" String="ZC_AISP_RFQ_HDR" />
+                        <PropertyValue Property="CollectionPath" String="VH_Bidder" />
                         <PropertyValue Property="SearchSupported" Bool="true" />
                         <PropertyValue Property="Parameters">
                             <Collection>
@@ -102,6 +135,42 @@
                                 <Record Type="Common.ValueListParameterInOut">
                                     <PropertyValue Property="LocalDataProperty" PropertyPath="Status" />
                                     <PropertyValue Property="ValueListProperty" String="Status" />
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+
+            <!-- Draft RFQ Number -->
+            <Annotations Target="SAP.ZC_AISP_RFQ_DRAFT/RfqNumber">
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="VH_RfqNumber_Draft" />
+                        <PropertyValue Property="SearchSupported" Bool="true" />
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="RfqNumber" />
+                                    <PropertyValue Property="ValueListProperty" String="RfqNumber" />
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+
+            <!-- Draft Bidder -->
+            <Annotations Target="SAP.ZC_AISP_RFQ_DRAFT/Bidder">
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="CollectionPath" String="VH_Bidder_Draft" />
+                        <PropertyValue Property="SearchSupported" Bool="true" />
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="Bidder" />
+                                    <PropertyValue Property="ValueListProperty" String="Bidder" />
                                 </Record>
                             </Collection>
                         </PropertyValue>
