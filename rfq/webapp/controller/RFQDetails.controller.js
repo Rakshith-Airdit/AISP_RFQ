@@ -542,10 +542,13 @@ sap.ui.define([
           success: (oData) => {
             resolve(oData);
           },
-          error: reject
+          error: (oError) => {
+            reject(oError);
+          }
         });
       });
     },
+
 
     /* === VALIDATION === */
     _isDeadlinePassed: function () {
@@ -764,7 +767,6 @@ sap.ui.define([
 
       const oWorkHeaderModel = this.getView().getModel("oWorkHeaderModel");
       const oHeaderModel = this.getView().getModel("oHeaderModel");
-
       const { RfqNumber, Bidder } = oHeaderModel.getProperty("/results/0");
 
       this._setBusy(true);
@@ -798,7 +800,11 @@ sap.ui.define([
 
               this._updateUIState(this.CONFIG.STATUS.ACCEPTED);
 
-              MessageToast.show("Pre-requisites completed successfully");
+              // MessageToast.show("Pre-requisites completed successfully");
+
+              this._showSuccess(oResponse?.saveRFQResponseAndAttachments?.message, {
+                title: "Success"
+              });
             } catch (oError) {
               // Revert status on error
               oWorkHeaderModel.setProperty("/results/0/ResponseStatus", "Pending");
@@ -843,11 +849,22 @@ sap.ui.define([
             try {
               this._setBusy(true);
               this._setSubmissionState(this.CONFIG.SUBMISSION_STATES.SUBMITTING, true);
-              await this._submitRFQ();
+              let oResponse = await this._submitRFQ();
               this.getView().getModel("oHeaderModel").setProperty("/results/0/Status", this.CONFIG.STATUS.SUBMITTED);
               this._updateUIState(this.CONFIG.STATUS.SUBMITTED);
-              MessageToast.show("RFQ submitted successfully");
-              this._navigateToList();
+              debugger;
+              let responseMsg = oResponse?.SubmitRFQ?.message || "RFQ submitted successfully"
+              let that = this;
+              // MessageToast.show("RFQ submitted successfully");
+              this._showSuccess(responseMsg, {
+                title: "Success",
+                actions: [MessageBox.Action.OK],
+                onClose: function (sAction) {
+                  if (sAction === MessageBox.Action.OK) {
+                    that._navigateToList();
+                  }
+                }
+              });
             } catch (oError) {
               this._showError(oError.message || "Failed to submit RFQ");
             } finally {
@@ -884,11 +901,22 @@ sap.ui.define([
           if (sAction === MessageBox.Action.YES) {
             try {
               this._setBusy(true);
-              await this._saveDraft();
+              let oResponse = await this._saveDraft();
+              debugger;
               this.getView().getModel("oHeaderModel").setProperty("/results/0/Status", this.CONFIG.STATUS.DRAFT);
               this._updateUIState(this.CONFIG.STATUS.DRAFT);
-              MessageToast.show("Draft finalized successfully.");
-              this._navigateToList();
+              // MessageToast.show("Draft finalized successfully.");
+              let responseMsg = (oResponse?.RfqNumber && oResponse?.Bidder) ? `Draft finalized successfully for RFQNumber ${oResponse?.RfqNumber} and Bidder ${oResponse?.Bidder}.` : "Draft finalized successfully"
+              this._showSuccess(responseMsg, {
+                title: "Success",
+                actions: [MessageBox.Action.OK],
+                onClose: function (sAction) {
+                  if (sAction === MessageBox.Action.OK) {
+                    that._navigateToList();
+                  }
+                }
+              });
+              // this._navigateToList();
             } catch (oError) {
               this._showError(oError.message || "Failed to finalize draft");
             } finally {
@@ -970,7 +998,7 @@ sap.ui.define([
         onConfirm: async (sAction) => {
           if (sAction === MessageBox.Action.YES) {
             try {
-              await this._updatePreRequisites();
+              let oResponse = await this._updatePreRequisites();
               const oUIState = this.getView().getModel("uiState").getData();
               oUIState.buttons.updatePreRequisite.visible = false;
               oUIState.buttons.updatePreRequisite.enabled = false;
@@ -978,7 +1006,11 @@ sap.ui.define([
               oUIState.submission.state = this.CONFIG.SUBMISSION_STATES.CREATING;
               this.getView().getModel("uiState").setData(oUIState);
               this.getView().getModel("uiState").refresh(true);
-              MessageToast.show("Pre-requisites updated successfully");
+              // MessageToast.show("Pre-requisites updated successfully");
+              let reponseMsg = oResponse?.editRFQResponsesAndAttachments?.message || "Pre-requisites updated successfully"
+              this._showSuccess(reponseMsg, {
+                title: "Success"
+              });
             } catch (oError) {
               this._showError(oError.message || "Failed to update pre-requisites");
             } finally {
@@ -1005,7 +1037,8 @@ sap.ui.define([
         onConfirm: async (sAction) => {
           if (sAction === MessageBox.Action.YES) {
             try {
-              await this._updateQuotation();
+              let oResponse = await this._updateQuotation();
+              debugger;
               const oUIState = this.getView().getModel("uiState").getData();
               oUIState.buttons.updateQuotation.visible = false;
               oUIState.buttons.updateQuotation.enabled = false;
@@ -1013,7 +1046,12 @@ sap.ui.define([
               oUIState.submission.state = this.CONFIG.SUBMISSION_STATES.CREATING;
               this.getView().getModel("uiState").setData(oUIState);
               this.getView().getModel("uiState").refresh(true);
-              MessageToast.show("Quotation updated successfully");
+              // MessageToast.show("Quotation updated successfully");
+
+              let reponseMsg = oResponse?.EditRFQ?.message || "Quotation updated successfully"
+              this._showSuccess(reponseMsg, {
+                title: "Success"
+              });
             } catch (oError) {
               this._showError(oError.message || "Failed to update quotation");
             } finally {
@@ -1040,33 +1078,54 @@ sap.ui.define([
         oModel.callFunction("/setRFQStatus", {
           method: "POST",
           urlParameters: { RfqNumber, Bidder, Action: sAction },
-          success: async (oData) => {
-            let res = JSON.parse(oData.setRFQStatus)
-            const { message, SupplierQuotation } = res;
+          success: (oData) => {
+            debugger;
+            const responseString = oData.results || oData.setRFQStatus;
+            let message = '';
+            let supplierQuotation = '';
 
-            if (SupplierQuotation) {
-              // oWorkHeaderModel.setProperty("/results/0/SupplierQuotation", SupplierQuotation);
-              // oWorkHeaderModel.refresh(true);
-              let aFilters = [
-                new Filter("RfqNumber", FilterOperator.EQ, RfqNumber),
-                new Filter("Bidder", FilterOperator.EQ, Bidder)
-              ]
+            // Parse string response (format: "message | SupplierQuotation=value")
+            if (typeof responseString === 'string') {
+              const messageParts = responseString.split('|');
+              message = messageParts[0].trim();
 
-              await Promise.all([
-                this._loadEntity("/ZC_AISP_RFQ_WORK_HDR", aFilters, "oWorkHeaderModel"),
-                this._loadEntity("/ZC_AISP_RFQ_WORK_ITEM", aFilters, "oWorkItemsModel")
-              ]);
+              const sqMatch = responseString.match(/SupplierQuotation=([^|]+)/);
+              supplierQuotation = sqMatch ? sqMatch[1].trim() : '';
+            }
+            else if (typeof responseString === 'object') {
+              message = responseString.message || `RFQ ${sAction}ed successfully`;
+              supplierQuotation = responseString.supplierQuotation || '';
             }
 
-            oHeaderModel.setProperty("/results/0/Status", sNewStatus);
-            oHeaderModel.refresh(true);
-            this._updateUIState(sNewStatus);
-            // oView.rerender()
-            MessageToast.show(`RFQ ${sAction}ed successfully`);
-            // this._showConfirm(message)
-            this._setBusy(false);
+            // Prepare filters for refreshing data
+            const aFilters = [
+              new Filter("RfqNumber", FilterOperator.EQ, RfqNumber),
+              new Filter("Bidder", FilterOperator.EQ, Bidder)
+            ];
+
+            // Refresh all relevant data
+            Promise.all([
+              this._loadEntity("/ZC_AISP_RFQ_WORK_HDR", aFilters, "oWorkHeaderModel"),
+              this._loadEntity("/ZC_AISP_RFQ_WORK_ITEM", aFilters, "oWorkItemsModel")
+            ]).then(() => {
+              // Update status in header model
+              oHeaderModel.setProperty("/results/0/Status", sNewStatus);
+              oHeaderModel.refresh(true);
+
+              // Update UI state
+              this._updateUIState(sNewStatus);
+
+              // Show success message
+              // MessageToast.show(`RFQ ${sAction}ed successfully`);
+              this._showSuccess(message)
+              this._setBusy(false);
+            }).catch((oError) => {
+              this._showError(`Failed to refresh data: ${oError.message}`);
+              this._setBusy(false);
+            });
+
           },
-          error: oError => {
+          error: (oError) => {
             this._showError(`Failed to update status: ${oError.message}`);
             this._setBusy(false);
           }
@@ -1118,7 +1177,7 @@ sap.ui.define([
         Additional_Attachments: oWorkHeaderData.Additional_Attachments || []
       };
 
-      await this._createEntity("/SubmitRFQ", oPayload);
+      return this._createEntity("/SubmitRFQ", oPayload);
     },
 
     _saveDraft: async function () {
@@ -1153,7 +1212,7 @@ sap.ui.define([
         })) || []
       };
 
-      await this._createEntity("/ZC_AISP_RFQ_DRAFT", oDraftData);
+      return this._createEntity("/ZC_AISP_RFQ_DRAFT", oDraftData);
     },
 
     _updatePreRequisites: function () {
@@ -1855,12 +1914,32 @@ sap.ui.define([
       });
     },
 
-    _showSuccess: function (sMessage = "Operation completed successfully.") {
-      MessageBox.success(sMessage);
+    _showSuccess: function (sMessage = "Operation completed successfully.", oOptions = {}) {
+      const {
+        title = "Success",
+        actions = [MessageBox.Action.OK],
+        onClose,
+      } = oOptions;
+
+      MessageBox.success(sMessage, {
+        title,
+        actions,
+        onClose,
+      });
     },
 
-    _showError: function (sMessage = "Something went wrong, Please Try Again After Sometime") {
-      MessageBox.error(sMessage);
+    _showError: function (sMessage = "Something went wrong, Please Try Again After Sometime", oOptions = {}) {
+      const {
+        title = "Error",
+        actions = [MessageBox.Action.OK],
+        onClose,
+      } = oOptions;
+
+      MessageBox.error(sMessage, {
+        title,
+        actions,
+        onClose
+      });
     },
 
     _showToast: function (sMessage, oOptions = {}) {

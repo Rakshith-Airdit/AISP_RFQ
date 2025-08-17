@@ -520,11 +520,23 @@ sap.ui.define([
                 onConfirm: async (sAction) => {
                     if (sAction === MessageBox.Action.YES) {
                         try {
-                            await this._savePreRequisites();
-                            await this._saveQuotation();
+                            let oPreReqRes = await this._savePreRequisites();
+                            let oQuotRes = await this._saveQuotation();
                             // await this._updateRFQStatus("submit", this.STATUS.SUBMITTED);
-                            MessageToast.show("RFQ submitted successfully");
-                            this._navigateToList();
+                            // MessageToast.show("RFQ submitted successfully");
+                            // this._navigateToList();
+                            let that = this;
+                            if (oPreReqRes && oQuotRes) {
+                                this._showSuccess("RFQ submitted successfully", {
+                                    title: "Success",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (sAction) {
+                                        if (sAction === MessageBox.Action.OK) {
+                                            that._navigateToList();
+                                        }
+                                    }
+                                });
+                            }
                         } catch (oError) {
                             this._showError(oError.message || "Failed to submit RFQ");
                         } finally {
@@ -583,10 +595,22 @@ sap.ui.define([
                     if (sAction === MessageBox.Action.YES) {
                         try {
                             this._setBusy(true);
-                            await this._updateDraft();
+                            let oResponse = await this._updateDraft();
                             // this._updateUIState(this.CONFIG.STATUS.DRAFT);
-                            MessageToast.show("Draft finalized successfully.");
-                            this._navigateToList();
+                            // MessageToast.show("Draft finalized successfully.");
+                            // this._navigateToList();
+                            let that = this;
+                            if (oResponse) {
+                                this._showSuccess("Draft finalized successfully.", {
+                                    title: "Success",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (sAction) {
+                                        if (sAction === MessageBox.Action.OK) {
+                                            that._navigateToList();
+                                        }
+                                    }
+                                });
+                            }
                         } catch (oError) {
                             this._showError(oError.message || "Failed to finalize draft");
                         } finally {
@@ -1101,8 +1125,8 @@ sap.ui.define([
 
             try {
                 // Call your update method with the properly formatted path
-                await this._updateEntity(sEntityPath, oDraftData);
-                MessageToast.show("Draft updated successfully");
+                return this._updateEntity(sEntityPath, oDraftData);
+                // MessageToast.show("Draft updated successfully");
             } catch (error) {
                 MessageBox.error("Failed to update draft: " + error.message);
             }
@@ -1140,8 +1164,12 @@ sap.ui.define([
         _createEntity: function (sPath, oPayload) {
             return new Promise((resolve, reject) => {
                 this.getView().getModel().create(sPath, oPayload, {
-                    success: resolve,
-                    error: reject
+                    success: (oData) => {
+                        resolve(oData);
+                    },
+                    error: (oError) => {
+                        reject(oError);
+                    }
                 });
             });
         },
@@ -1243,8 +1271,32 @@ sap.ui.define([
             });
         },
 
-        _showError: function (sMessage) {
-            MessageBox.error(sMessage);
+        _showSuccess: function (sMessage = "Operation completed successfully.", oOptions = {}) {
+            const {
+                title = "Success",
+                actions = [MessageBox.Action.OK],
+                onClose,
+            } = oOptions;
+
+            MessageBox.success(sMessage, {
+                title,
+                actions,
+                onClose,
+            });
+        },
+
+        _showError: function (sMessage = "Something went wrong, Please Try Again After Sometime", oOptions = {}) {
+            const {
+                title = "Error",
+                actions = [MessageBox.Action.OK],
+                onClose,
+            } = oOptions;
+
+            MessageBox.error(sMessage, {
+                title,
+                actions,
+                onClose
+            });
         },
 
         _navigateToList: function () {

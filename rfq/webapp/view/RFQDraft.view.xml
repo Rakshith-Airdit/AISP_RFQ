@@ -1163,7 +1163,7 @@
                     class="sapUiSmallMarginEnd"
                 />
                 <m:Button
-                    text="Final Submit RFQ"
+                    text="Final Submit Quotation"
                     type="Emphasized"
                     press=".onFinalSubmit"
                     busy="{uiState>/submission/isSubmitting}"
