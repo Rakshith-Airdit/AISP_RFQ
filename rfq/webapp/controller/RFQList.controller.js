@@ -3,8 +3,10 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/core/Fragment"
   ],
-  (Controller, Filter, FilterOperator) => {
+  (Controller, Filter, FilterOperator, JSONModel, Fragment) => {
     "use strict";
 
     return Controller.extend("com.aisp.rfq.controller.RFQList", {

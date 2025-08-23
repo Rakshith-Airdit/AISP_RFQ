@@ -5,5 +5,44 @@
     xmlns:f="sap.f"
     xmlns="sap.m"
 >
-    <App id="app" />
+    <Page
+        showHeader="true"
+        showFooter="false"
+    >
+        <customHeader>
+            <OverflowToolbar>
+                <content>
+                    <Title
+                        text="RFQ Quotation"
+                        level="H2"
+                        class="sapUiTinyMarginBegin"
+                    />
+                    <ToolbarSpacer />
+                    <Button
+                        id="BadgedButton"
+                        class="sapUiTinyMarginBeginEnd"
+                        icon="sap-icon://message-popup"
+                        type="Transparent"
+                        badgeStyle="Default"
+                        press="onNotificationPress"
+                        ariaHasPopup="Dialog"
+                    >
+                        <customData>
+                            <BadgeCustomData
+                                key="badge"
+                                value="{= ${oNotificationsModel>/notifications}.length}"
+                                visible="{= ${oNotificationsModel>/notifications}.length > 0}"
+                            />
+                        </customData>
+                    </Button>
+                </content>
+            </OverflowToolbar>
+        </customHeader>
+        <content>
+            <App
+                id="app"
+                height="95%"
+            />
+        </content>
+    </Page>
 </mvc:View>

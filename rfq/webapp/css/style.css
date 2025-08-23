@@ -1,11 +1,12 @@
-/* Enter your custom styles here *//* Enter your custom styles here */
+/* Enter your custom styles here */
+/*Enter your custom styles here */ 
 html,
 body {
   overflow-y: hidden;
 }
 
 .sapUiCountdownHighlight {
-  background-color: #FDEDEC;
+  background-color: #fdedec;
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   min-width: 3.5rem;
@@ -24,4 +25,11 @@ body {
   font-size: 0.75rem;
   opacity: 0.7;
   line-height: 1.2;
+}
+
+.sapUiSizeCompact
+  .sapMBtn
+  .sapMBadgeTopRight.sapMBadge
+  .sapMBadgeIndicator:not(.sapMBadgeAttention) {
+  top: 0rem !important;
 }
