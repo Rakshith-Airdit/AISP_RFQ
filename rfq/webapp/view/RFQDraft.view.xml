@@ -375,6 +375,7 @@
                                         id="draftquestionList"
                                         items="{oQuestionsModel>/questions}"
                                         class="sapUiSmallMarginBottom"
+                                        noDataText="No Questions Set By Admin"
                                     >
                                         <m:CustomListItem>
                                             <m:VBox
@@ -386,12 +387,17 @@
                                                     text="{oQuestionsModel>QUESTION_TEXT}"
                                                     required="{oQuestionsModel>IS_MANDATORY}"
                                                     wrapping="true"
+                                                    class="sapUiSmallMarginBottom"
                                                 />
+
+                                                <!-- Radio Button Type -->
                                                 <m:RadioButtonGroup
-                                                    selectedIndex="{= ${oQuestionsModel>RESPONSE} === 'Yes' ? 0 : 1 }"
+                                                    visible="{= ${oQuestionsModel>QUESTION_TYPE}.toUpperCase() === 'RADIO' }"
+                                                    selectedIndex="{= ${oQuestionsModel>RESPONSE} === 'Yes' ? 0 : ${oQuestionsModel>RESPONSE} === 'No' ? 1 : -1 }"
                                                     columns="2"
-                                                    select=".onAnswerSelect"
+                                                    select=".onPreReqRadioBtnSelect"
                                                     enabled="{uiState>/sections/preRequisite/enabled}"
+                                                    class="sapUiSmallMarginBottom"
                                                 >
                                                     <m:buttons>
                                                         <m:RadioButton
@@ -402,6 +408,23 @@
                                                         />
                                                     </m:buttons>
                                                 </m:RadioButtonGroup>
+
+                                                <!-- Dropdown Type -->
+                                                <m:Select
+                                                    visible="{= ${oQuestionsModel>QUESTION_TYPE}.toUpperCase() === 'DROPDOWN' }"
+                                                    selectedKey="{oQuestionsModel>RESPONSE}"
+                                                    items="{oQuestionsModel>DROPDOWN_OPTIONS}"
+                                                    change=".onAnswerSelect"
+                                                    enabled="{uiState>/sections/preRequisite/enabled}"
+                                                    class="sapUiSmallMarginBottom"
+                                                >
+                                                    <m:items>
+                                                        <core:ListItem
+                                                            text="{oQuestionsModel>VALUE}"
+                                                            key="{oQuestionsModel>ID}"
+                                                        />
+                                                    </m:items>
+                                                </m:Select>
                                             </m:VBox>
                                         </m:CustomListItem>
                                     </m:List>
@@ -663,6 +686,14 @@
                                             <m:Column>
                                                 <m:Text text="Total Price" />
                                             </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Delivery Date" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text
+                                                    text="Expected Delivery Date"
+                                                />
+                                            </m:Column>
                                         </m:columns>
                                         <m:items>
                                             <m:ColumnListItem>
@@ -695,6 +726,22 @@
                                                     <!-- editable="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${oSelectedOptionModel>/selectedOption} === 'Manual' &amp;&amp; ${uiState>/submission/state} !== 'preview' }" -->
                                                     <m:Text
                                                         text="{oWorkItemsModel>Netwr}"
+                                                    />
+                                                    <m:DatePicker
+                                                        value="{oWorkItemsModel>DeliveryDate}"
+                                                        placeholder="Enter Delivery Date"
+                                                        change=""
+                                                        editable="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                                        displayFormat="yyyy-MM-dd"
+                                                        valueFormat="yyyy-MM-dd"
+                                                    />
+                                                    <m:DatePicker
+                                                        value="{oWorkItemsModel>ExpectedDeliveryDate}"
+                                                        placeholder="Enter Estimated Delivery Date"
+                                                        change=""
+                                                        editable="{= ${uiState>/sections/createQuotation/enabled} &amp;&amp; ${uiState>/submission/state} !== 'preview' }"
+                                                        displayFormat="yyyy-MM-dd"
+                                                        valueFormat="yyyy-MM-dd"
                                                     />
                                                 </m:cells>
                                             </m:ColumnListItem>
@@ -984,6 +1031,16 @@
                                                         text="Total Price"
                                                     />
                                                 </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text
+                                                        text="Delivery Date"
+                                                    />
+                                                </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text
+                                                        text="Expected Delivery Date"
+                                                    />
+                                                </m:Column>
                                             </m:columns>
                                             <m:items>
                                                 <m:ColumnListItem>
@@ -1008,6 +1065,12 @@
                                                             number="{oWorkItemsModel>Netwr}"
                                                             unit="{oHeaderModel>/results/0/PriceUnit}"
                                                             state="None"
+                                                        />
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>DeliveryDate}"
+                                                        />
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>ExpectedDeliveryDate}"
                                                         />
                                                     </m:cells>
                                                 </m:ColumnListItem>
@@ -1052,7 +1115,7 @@
                                         </m:Table>
 
                                         <!-- Total -->
-                                        <m:HBox
+                                        <!-- <m:HBox
                                             justifyContent="End"
                                             class="sapUiSmallMarginTop sapUiMediumMarginBottom"
                                         >
@@ -1073,7 +1136,7 @@
                                                 state="Success"
                                                 class="sapUiLargeBold"
                                             />
-                                        </m:HBox>
+                                        </m:HBox> -->
                                     </m:VBox>
                                 </m:Panel>
 

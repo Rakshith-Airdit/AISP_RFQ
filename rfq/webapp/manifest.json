@@ -108,8 +108,7 @@
         "type": "View",
         "viewType": "XML",
         "path": "com.aisp.rfq.view",
-        "async": true,
-        "viewPath": "com.aisp.rfq.view"
+        "async": true
       },
       "routes": [
         {

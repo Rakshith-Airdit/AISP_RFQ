@@ -6,6 +6,7 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/m/MessageToast",
     "sap/ui/core/Fragment",
+    "sap/ui/core/format/DateFormat"
 ], function (
     Controller,
     Filter,
@@ -14,6 +15,7 @@ sap.ui.define([
     MessageBox,
     MessageToast,
     Fragment,
+    DateFormat
 ) {
     "use strict";
 
@@ -198,6 +200,12 @@ sap.ui.define([
             ]);
 
             const oWorkHeaderData = this.getView().getModel("oWorkHeaderModel").getProperty("/results/0");
+            const oWorkItemData = this.getView().getModel("oWorkItemsModel").getProperty("/results");
+
+            if (oWorkItemData) {
+                this._convertISOToDate(oWorkItemData, this.getView().getModel("oWorkItemsModel"))
+            }
+
             await this._loadDynamicSections(oWorkHeaderData.VendorAccgrp, rfqNum, bidder);
         },
 
@@ -631,6 +639,8 @@ sap.ui.define([
                 aItems.forEach(item => {
                     item.Netpr = "";
                     item.Netwr = 0;
+                    item.DeliveryDate = "";
+                    item.ExpectedDeliveryDate = "";
                 });
                 oWorkItemsModel.setProperty("/results", aItems);
             }
@@ -672,11 +682,29 @@ sap.ui.define([
             });
         },
 
-        onAnswerSelect: function (oEvent) {
+        onPreReqRadioBtnSelect: function (oEvent) {
             const oSource = oEvent.getSource();
             const selectedText = oSource.getAggregation("buttons")[oEvent.getParameter("selectedIndex")].getText();
             const oContext = oSource.getBindingContext("oQuestionsModel");
             this.getView().getModel("oQuestionsModel").setProperty(`${oContext.getPath()}/RESPONSE`, selectedText);
+        },
+
+        // Event handler for answer selection
+        onAnswerSelect: function (oEvent) {
+            const oSource = oEvent.getSource();
+            const bindingContext = oSource.getBindingContext("oQuestionsModel");
+
+            let selectedValue = "";
+
+            if (oSource.isA("sap.m.RadioButtonGroup")) {
+                const selectedIndex = oEvent.getParameter("selectedIndex");
+                selectedValue = selectedIndex === 0 ? "Yes" : "No";
+            } else if (oSource.isA("sap.m.Select")) {
+                selectedValue = oEvent.getParameter("selectedItem").getKey();
+            }
+
+            // Update the response in model
+            bindingContext.getModel().setProperty(bindingContext.getPath() + "/RESPONSE", selectedValue);
         },
 
         onExcelUpload: function (oEvent) {
@@ -1072,7 +1100,9 @@ sap.ui.define([
                     ItemNumber: item.ItemNumber,
                     Netpr: item.Netpr,
                     Netwr: item.Netwr,
-                    Quantity: item.Quantity
+                    Quantity: item.Quantity,
+                    DeliveryDate: item.DeliveryDate,
+                    ExpectedDeliveryDate: item.ExpectedDeliveryDate
                 })),
                 Additional_Charges: oWorkHeader.Additional_Charges || [],
                 Additional_Attachments: oWorkHeader.Additional_Attachments || []
@@ -1095,7 +1125,9 @@ sap.ui.define([
                     ItemNumber: oItem.ItemNumber,
                     Bidder: oWorkHeaderData.Bidder,
                     Netpr: oItem.Netpr || "0.00",
-                    Netwr: oItem.Netwr || "0.00"
+                    Netwr: oItem.Netwr || "0.00",
+                    DeliveryDate: oItem.DeliveryDate,
+                    ExpectedDeliveryDate: oItem.ExpectedDeliveryDate
                 })),
                 Remarks: oWorkHeaderData.Remarks || "",
                 Additional_Charge_Present: !!oWorkHeaderData.Additional_Charges?.length,
@@ -1208,6 +1240,30 @@ sap.ui.define([
             const oPage = this.getView().byId("ObjectPageLayout");
             const oPreviewSection = this.getView().byId("previewSection");
             if (oPage && oPreviewSection) oPage.scrollToSection(oPreviewSection.getId());
+        },
+
+        _convertISOToDate: function (workItemData, oWorkItemsModel) {
+            if (workItemData && workItemData.length > 0) {
+                const updatedItems = workItemData.map(item => {
+                    // If dates are already in "2025-09-09" string format, convert to Date objects
+                    const convertDate = (dateValue) => {
+                        if (!dateValue) {
+                            return null;
+                        }
+                        // Create a DateFormat instance for the desired output format
+                        const oDateFormat = DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
+                        return oDateFormat.format(dateValue);
+                    };
+
+                    return {
+                        ...item,
+                        DeliveryDate: convertDate(item.DeliveryDate),
+                        ExpectedDeliveryDate: convertDate(item.ExpectedDeliveryDate)
+                    };
+                });
+
+                oWorkItemsModel.setProperty("/results", updatedItems);
+            }
         },
 
         /************************************

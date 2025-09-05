@@ -418,12 +418,17 @@
                                                     text="{oQuestionsModel>QUESTION_TEXT}"
                                                     required="{oQuestionsModel>IS_MANDATORY}"
                                                     wrapping="true"
+                                                    class="sapUiSmallMarginBottom"
                                                 />
+
+                                                <!-- Radio Button Type -->
                                                 <m:RadioButtonGroup
-                                                    selectedIndex="{= ${oQuestionsModel>RESPONSE} === 'Yes' ? 0 : 1 }"
+                                                    visible="{= ${oQuestionsModel>QUESTION_TYPE}.toUpperCase() === 'RADIO' }"
+                                                    selectedIndex="{= ${oQuestionsModel>RESPONSE} === 'Yes' ? 0 : ${oQuestionsModel>RESPONSE} === 'No' ? 1 : -1 }"
                                                     columns="2"
-                                                    select=".onAnswerSelect"
+                                                    select=".onPreReqRadioBtnSelect"
                                                     enabled="{uiState>/sections/preRequisite/enabled}"
+                                                    class="sapUiSmallMarginBottom"
                                                 >
                                                     <m:buttons>
                                                         <m:RadioButton
@@ -434,6 +439,24 @@
                                                         />
                                                     </m:buttons>
                                                 </m:RadioButtonGroup>
+
+                                                <!-- Dropdown Type -->
+                                                <!-- selectedKey="{oQuestionsModel>RESPONSE}" -->
+
+                                                <m:Select
+                                                    visible="{= ${oQuestionsModel>QUESTION_TYPE}.toUpperCase() === 'DROPDOWN' }"
+                                                    items="{oQuestionsModel>DROPDOWN_OPTIONS}"
+                                                    change=".onAnswerSelect"
+                                                    enabled="{uiState>/sections/preRequisite/enabled}"
+                                                    class="sapUiSmallMarginBottom"
+                                                >
+                                                    <m:items>
+                                                        <core:ListItem
+                                                            text="{oQuestionsModel>VALUE}"
+                                                            key="{oQuestionsModel>ID}"
+                                                        />
+                                                    </m:items>
+                                                </m:Select>
                                             </m:VBox>
                                         </m:CustomListItem>
                                     </m:List>
@@ -671,6 +694,14 @@
                                                     text="Total Price -INR"
                                                 />
                                             </m:Column>
+                                            <m:Column>
+                                                <m:Text text="Delivery Date" />
+                                            </m:Column>
+                                            <m:Column>
+                                                <m:Text
+                                                    text="Expected Delivery Date"
+                                                />
+                                            </m:Column>
                                         </m:columns>
                                         <m:items>
                                             <m:ColumnListItem>
@@ -702,6 +733,30 @@
                                                     />
                                                     <m:Text
                                                         text="{oWorkItemsModel>Netwr}"
+                                                    />
+                                                    <!-- value="{
+                                                            path: 'oWorkItemsModel>DeliveryDate',
+                                                            formatter: '.formatDate'
+                                                        }" -->
+                                                    <m:DatePicker
+                                                        value="{oWorkItemsModel>DeliveryDate}"
+                                                        placeholder="Enter Delivery Date"
+                                                        change=""
+                                                        editable="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' &amp;&amp; ${uiState>/submission/state} !== 'preview'  &amp;&amp; ${uiState>/sections/createQuotation/enabled} }"
+                                                        displayFormat="yyyy-MM-dd"
+                                                        valueFormat="yyyy-MM-dd"
+                                                    />
+                                                    <!-- value="{
+                                                            path: 'oWorkItemsModel>ExpectedDeliveryDate',
+                                                            formatter: '.formatDate'
+                                                        }" -->
+                                                    <m:DatePicker
+                                                        value="{oWorkItemsModel>ExpectedDeliveryDate}"
+                                                        placeholder="Enter Estimated Delivery Date"
+                                                        change=""
+                                                        editable="{= ${oSelectedOptionModel>/selectedOption} === 'Manual' &amp;&amp; ${uiState>/submission/state} !== 'preview'  &amp;&amp; ${uiState>/sections/createQuotation/enabled} }"
+                                                        displayFormat="yyyy-MM-dd"
+                                                        valueFormat="yyyy-MM-dd"
                                                     />
                                                 </m:cells>
                                             </m:ColumnListItem>
@@ -989,6 +1044,16 @@
                                                         text="Total Price"
                                                     />
                                                 </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text
+                                                        text="Delivery Date"
+                                                    />
+                                                </m:Column>
+                                                <m:Column hAlign="End">
+                                                    <m:Text
+                                                        text="Expected Delivery Date"
+                                                    />
+                                                </m:Column>
                                             </m:columns>
                                             <m:items>
                                                 <m:ColumnListItem>
@@ -1013,6 +1078,12 @@
                                                             number="{oWorkItemsModel>Netwr}"
                                                             unit="{oHeaderModel>/results/0/PriceUnit}"
                                                             state="None"
+                                                        />
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>DeliveryDate}"
+                                                        />
+                                                        <m:Text
+                                                            text="{oWorkItemsModel>ExpectedDeliveryDate}"
                                                         />
                                                     </m:cells>
                                                 </m:ColumnListItem>

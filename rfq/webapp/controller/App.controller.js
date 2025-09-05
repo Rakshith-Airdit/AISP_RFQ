@@ -91,7 +91,6 @@ sap.ui.define([
       this.getView().setModel(new JSONModel({
         chatBusy: false
       }), "oSubmitStateModel");
-
     },
 
     formatDateTime: function (dateTime) {
@@ -253,10 +252,9 @@ sap.ui.define([
       setTimeout(function () {
         var oScrollContainer = this.byId("idMessagesScrollContainer");
         if (oScrollContainer) {
-          oScrollContainer.scrollTo(0, 999999);
+          oScrollContainer.scrollTo(0, 999999, 500);
         }
       }.bind(this), 100);
     },
-
   });
 });

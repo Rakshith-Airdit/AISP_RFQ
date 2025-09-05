@@ -20,7 +20,7 @@
                     height="100%"
                     width="100%"
                 >
-                    <List
+                    <!-- <List
                         id="list"
                         items="{oNotificationsModel>/notifications}"
                         growing="true"
@@ -43,16 +43,51 @@
                                 press="onActionPressed"
                             />
                         </FeedListItem>
+                    </List> -->
+                    <List
+                        id="list"
+                        items="{oNotificationsModel>/notifications}"
+                        growing="true"
+                        growingScrollToLoad="true"
+                    >
+                        <StandardListItem
+                            title="{oNotificationsModel>Author}"
+                            description="{path: 'oNotificationsModel>Date', formatter: '.formatDateTime'}"
+                            iconDensityAware="false"
+                            counter="1"
+                            press="onNavToDetail"
+                            type="Navigation"
+                        >
+                            <!-- info="{oNotificationsModel>Type}" -->
+                            <!-- infoState="{= ${oNotificationsModel>Type} === 'Approval' ? 'Success' : 'Warning' }" -->
+
+                            <avatar>
+                                <Avatar
+                                    src="{oNotificationsModel>AuthorPicUrl}"
+                                    displaySize="XL"
+                                    displayShape="Circle"
+                                    showBorder="false"
+                                    backgroundColor="Accent6"
+                                />
+                            </avatar>
+                            <!-- <ObjectAttribute
+                                text="{oNotificationsModel>Author}"
+                            />
+                            <ObjectAttribute
+                                text="{path: 'oNotificationsModel>Date', formatter: '.formatDateTime'}"
+                            /> -->
+                        </StandardListItem>
                     </List>
                 </VBox>
             </Page>
             <Page
                 id="detail"
-                class="sapUiResponsivePadding--header"
                 showNavButton="true"
                 navButtonPress="onNavBack"
                 title="Message"
                 enableScrolling="false"
+                titleAlignment="Start"
+                showFooter="true"
             >
                 <content>
                     <FlexBox
@@ -64,7 +99,7 @@
                         fitContainer="true"
                     >
                         <ScrollContainer
-                            id="idTextScrollContainer"
+                            id="idMessagesScrollContainer"
                             vertical="true"
                             width="100%"
                             height="100%"
@@ -124,7 +159,7 @@
                                 id="idUserChatInput"
                                 placeholder="Type your message..."
                                 width="100%"
-                                enabled="{= !${oSubmitStateModel/chatBusy} }"
+                                enabled="{= !${oSubmitStateModel>chatBusy} }"
                             >
                                 <layoutData>
                                     <FlexItemData growFactor="1" />
@@ -135,13 +170,22 @@
                                 icon="sap-icon://paper-plane"
                                 type="Emphasized"
                                 press=".onSendMessage"
-                                enabled="{= !${oSubmitStateModel/chatBusy} }"
-                                busy="{oSubmitStateModel/chatBusy}"
+                                enabled="{= !${oSubmitStateModel>/chatBusy} }"
+                                busy="{oSubmitStateModel>/chatBusy}"
                                 busyIndicatorDelay="0"
                                 class="sapUiTinyMarginBegin"
                             />
                         </FlexBox>
                     </Toolbar>
+
+                    <!-- <FeedInput
+                            id="idUserChatInput"
+                            placeholder="Type your message..."
+                            enabled="{= !${oSubmitStateModel>chatBusy} }"
+                            showIcon="false"
+                            post=".onSendMessage"
+                            rows="1"
+                        /> -->
                 </footer>
             </Page>
         </NavContainer>

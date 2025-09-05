@@ -9,6 +9,7 @@ sap.ui.define([
   "sap/ui/export/Spreadsheet",
   "sap/ui/export/library",
   "sap/ui/export/ExportHandler",
+  "sap/ui/core/format/DateFormat"
 ], function (
   Controller,
   Filter,
@@ -19,7 +20,8 @@ sap.ui.define([
   Fragment,
   Spreadsheet,
   library,
-  ExportHandler
+  ExportHandler,
+  DateFormat
 ) {
   "use strict";
 
@@ -98,14 +100,16 @@ sap.ui.define([
 
       this._setModel("uiState", oUIState);
 
-      let dataModels = ["oHeaderModel", "oItemsModel", "oWorkHeaderModel", "oWorkItemsModel", "oQuestionsModel", "oAttachmentsModel"];
+      let dataModels = ["oHeaderModel", "oItemsModel", "oWorkHeaderModel", "oWorkItemsModel"];
 
       // Data models
       dataModels.forEach(sName => {
         // this._setModel(sName, { results: [] });
         this.sName = this._setModel(sName, { results: [] });
       });
-
+      // "oQuestionsModel", "oAttachmentsModel"
+      this._setModel("oQuestionsModel", { questions: [] });
+      this._setModel("oAttachmentsModel", { attachments: [] });
       this._setModel("oSelectedOptionModel", { selectedOption: "Manual" });
       this._setModel("oCountdownModel", { days: "--", hours: "--", mins: "--", secs: "--" });
       this._setModel("oTotalModel", { TotalQuotationValue: "0.00" });
@@ -345,6 +349,7 @@ sap.ui.define([
     /* === DATA LOADING === */
     _loadData: async function (rfqNum, bidder) {
       const oHeaderModel = this.getView().getModel("oHeaderModel");
+      const oWorkItemsModel = this.getView().getModel("oWorkItemsModel");
 
       let aFilters = [
         new Filter("RfqNumber", FilterOperator.EQ, rfqNum),
@@ -359,12 +364,42 @@ sap.ui.define([
       ]);
 
       const oHeaderData = oHeaderModel.getProperty("/results/0");
+      const workItemData = oWorkItemsModel.getProperty("/results");
       const accountGroup = oHeaderData.VendorAccgrp;
 
       if (accountGroup) {
         await this._loadDynamicSections(accountGroup, rfqNum, bidder);
         this._startCountdown(oHeaderData.Deadline_dt);
         this._updateUIState(oHeaderData.Status);
+      }
+
+      if (workItemData) {
+        this._convertISOToDate(workItemData, oWorkItemsModel)
+      }
+
+    },
+
+    _convertISOToDate: function (workItemData, oWorkItemsModel) {
+      if (workItemData && workItemData.length > 0) {
+        const updatedItems = workItemData.map(item => {
+          // If dates are already in "2025-09-09" string format, convert to Date objects
+          const convertDate = (dateValue) => {
+            if (!dateValue) {
+              return null;
+            }
+            // Create a DateFormat instance for the desired output format
+            const oDateFormat = DateFormat.getInstance({ pattern: "yyyy-MM-dd" });
+            return oDateFormat.format(dateValue);
+          };
+
+          return {
+            ...item,
+            DeliveryDate: convertDate(item.DeliveryDate),
+            ExpectedDeliveryDate: convertDate(item.ExpectedDeliveryDate)
+          };
+        });
+
+        oWorkItemsModel.setProperty("/results", updatedItems);
       }
     },
 
@@ -389,7 +424,9 @@ sap.ui.define([
     _loadQuestionsSection: async function (accountGroup, rfqNum, bidder) {
       // const oUIStateModel = this.getView().getModel("uiState");
       const oQuestionsModel = this.getView().getModel("oQuestionsModel");
+
       let aFilters = [new Filter("ACCOUNT_GROUP", FilterOperator.EQ, accountGroup)]
+
       const questions = await this._fetchEntity("/SupplierPreReqQstns", aFilters);
 
       // If no questions set by admin throw an error
@@ -399,8 +436,23 @@ sap.ui.define([
         throw new Error("No pre-requisite questions defined by admin");
       }
 
-      // Add Default Selected Response Here
-      const initializedQuestions = questions.map(q => ({ ...q, RESPONSE: "Yes" }));
+      // Initialize questions with default responses based on type
+      const initializedQuestions = questions.map(q => {
+        let defaultResponse = "";
+        let questionType = q.QUESTION_TYPE.toUpperCase();
+
+        if (questionType === 'RADIO') {
+          defaultResponse = "Yes"; // Default to "Yes" for radio buttons
+        } else if (questionType === 'DROPDOWN' && q.DROPDOWN_OPTIONS && q.DROPDOWN_OPTIONS.length > 0) {
+          // Set first option as default fq.QUESTION_TYPEor dropdowns
+          defaultResponse = q.DROPDOWN_OPTIONS[0].VALUE;
+        }
+
+        return {
+          ...q,
+          RESPONSE: defaultResponse
+        };
+      });
 
       // Check if already responded
       const respSts = this.getView().getModel("oWorkHeaderModel").getProperty("/results/0/ResponseStatus");
@@ -446,20 +498,34 @@ sap.ui.define([
       oAttachmentsModel.setProperty("/attachments", initializedAttachments);
     },
 
+    // Fetch previous responses for MongoDB structure
     _fetchPreviousResponses: async function (rfqNum, bidder, accountGroup, questions) {
-      let aFilters = [
-        new Filter("RfqNumber", FilterOperator.EQ, rfqNum),
-        new Filter("Bidder", FilterOperator.EQ, bidder),
-        new Filter("ACCOUNT_GROUP", FilterOperator.EQ, accountGroup)
-      ];
+      try {
+        const aFilters = [
+          new Filter("RfqNumber", FilterOperator.EQ, rfqNum),
+          new Filter("Bidder", FilterOperator.EQ, bidder),
+          new Filter("ACCOUNT_GROUP", FilterOperator.EQ, accountGroup)
+        ];
 
-      const responseData = await this._fetchEntity("/SupplierResponses", aFilters);
-      const previousResponses = responseData?.[0]?.RESPONSES || [];
+        const previousResponses = await this._fetchEntity("/SupplierResponses", aFilters);
 
-      questions.forEach(q => {
-        const prevResponse = previousResponses.find(r => r.QUESTION_ID === q.QUESTION_ID);
-        q.RESPONSE = prevResponse?.RESPONSE_TEXT || "Yes";
-      });
+        if (previousResponses && previousResponses.length > 0) {
+          // Assuming we get the latest response document
+          const latestResponse = previousResponses[0];
+
+          if (latestResponse.RESPONSES && latestResponse.RESPONSES.length > 0) {
+            questions.forEach(question => {
+              const response = latestResponse.RESPONSES.find(r => r.QUESTION_ID === question.QUESTION_ID);
+              if (response) {
+                question.RESPONSE = response.RESPONSE_TEXT;
+                // RESPONSE_TEXT contains "Yes"/"No" for radio or option key for dropdown
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching previous responses:", error);
+      }
     },
 
     _fetchPreviousAttachments: async function (rfqNum, bidder, accountGroup, attachments) {
@@ -482,6 +548,26 @@ sap.ui.define([
           a.IS_PRESENT = !!prevAttachment.FILE_URL;
         }
       });
+    },
+
+    // Event handler for answer selection
+    onAnswerSelect: function (oEvent) {
+      const oSource = oEvent.getSource();
+      let oQuestionsModel = this.getView().getModel("oQuestionsModel")
+      const bindingContext = oSource.getBindingContext("oQuestionsModel");
+
+      let selectedValue = "";
+
+      if (oSource.isA("sap.m.RadioButtonGroup")) {
+        const selectedIndex = oEvent.getParameter("selectedIndex");
+        selectedValue = selectedIndex === 0 ? "Yes" : "No";
+      } else if (oSource.isA("sap.m.Select")) {
+        selectedValue = oEvent.getParameter("selectedItem").getText();
+      }
+
+      // Update the response in model
+      oQuestionsModel.setProperty(bindingContext.getPath() + "/RESPONSE", selectedValue);
+      oQuestionsModel.refresh();
     },
 
     /* === COUNTDOWN TIMER === */
@@ -900,6 +986,7 @@ sap.ui.define([
         onConfirm: async (sAction) => {
           if (sAction === MessageBox.Action.YES) {
             try {
+              let that = this;
               this._setBusy(true);
               let oResponse = await this._saveDraft();
               debugger;
@@ -1194,7 +1281,9 @@ sap.ui.define([
           ItemNumber: oItem.ItemNumber,
           Bidder: oHeaderData.Bidder,
           Netpr: oItem.Netpr || "0.00",
-          Netwr: oItem.Netwr || "0.00"
+          Netwr: oItem.Netwr || "0.00",
+          DeliveryDate: oItem.DeliveryDate,
+          ExpectedDeliveryDate: oItem.ExpectedDeliveryDate
         })),
         Remarks: oWorkHeaderData.Remarks || "",
         Additional_Charge_Present: !!oWorkHeaderData.Additional_Charges?.length,
@@ -1253,7 +1342,9 @@ sap.ui.define([
           ItemNumber: item.ItemNumber,
           Netpr: item.Netpr,
           Netwr: item.Netwr,
-          Quantity: item.Quantity
+          Quantity: item.Quantity,
+          DeliveryDate: item.DeliveryDate,
+          ExpectedDeliveryDate: item.ExpectedDeliveryDate
         })),
         Additional_Charge_Present: !!oWorkHeaderData.Additional_Charges?.length,
         Additional_Charges: oWorkHeaderData.Additional_Charges || [],
@@ -1291,6 +1382,8 @@ sap.ui.define([
         aItems.forEach(item => {
           item.Netpr = "";
           item.Netwr = 0;
+          item.DeliveryDate = "";
+          item.ExpectedDeliveryDate = "";
         });
         oWorkItemsModel.setProperty("/results", aItems);
       }
@@ -1333,7 +1426,7 @@ sap.ui.define([
       });
     },
 
-    onAnswerSelect: function (oEvent) {
+    onPreReqRadioBtnSelect: function (oEvent) {
       const oSource = oEvent.getSource();
       const selectedText = oSource.getAggregation("buttons")[oEvent.getParameter("selectedIndex")].getText();
       const oContext = oSource.getBindingContext("oQuestionsModel");
@@ -1415,9 +1508,11 @@ sap.ui.define([
     },
 
     _filterExcelRows: function (sheetJson) {
-      const headers = ["Item No", "Material No - Description", "UOM", "Plant", "Required Quantity", "Net Price - INR", "Total Price"];
+      const headers = ["Item No", "Material No - Description", "UOM", "Plant", "Required Quantity", "Net Price - INR", "Total Price", 'Delivery Date (yyyy-mm-dd)', 'Expected Delivery Date (yyyy-mm-dd)'];
+
       const filteredData = [];
       let isCollecting = false;
+
       for (const row of sheetJson) {
         if (!row?.length) continue;
         if (row.length === headers.length && row.every((cell, i) => cell === headers[i])) {
@@ -1431,13 +1526,105 @@ sap.ui.define([
 
     _validateExcelData: function (excelData) {
       const invalidRows = [], validRows = [];
+
       excelData.forEach((row, index) => {
         const netPrice = row[5], quantity = row[4];
-        if (isNaN(netPrice) || netPrice < 0) invalidRows.push(`Row ${index + 1}: Invalid Net Price`);
-        if (isNaN(quantity) || quantity < 0) invalidRows.push(`Row ${index + 1}: Invalid Quantity`);
-        else validRows.push({ itemNumber: row[0], netPrice: row[5], quantity: row[4] });
+        const deliveryDateSerial = row[7], expectedDeliveryDateSerial = row[8];
+        const errors = [];
+
+        // Validate Net Price
+        if (isNaN(netPrice) || netPrice < 0) {
+          errors.push("Invalid Net Price");
+        }
+
+        // Validate Quantity
+        if (isNaN(quantity) || quantity < 0) {
+          errors.push("Invalid Quantity");
+        }
+
+        // Convert Excel serial dates to yyyy-mm-dd format
+        let deliveryDate = null;
+        let expectedDeliveryDate = null;
+
+        if (deliveryDateSerial && !isNaN(deliveryDateSerial)) {
+          deliveryDate = this._excelSerialToDateString(deliveryDateSerial);
+          if (!deliveryDate) {
+            errors.push("Invalid Delivery Date");
+          }
+        }
+
+        if (expectedDeliveryDateSerial && !isNaN(expectedDeliveryDateSerial)) {
+          expectedDeliveryDate = this._excelSerialToDateString(expectedDeliveryDateSerial);
+          if (!expectedDeliveryDate) {
+            errors.push("Invalid Expected Delivery Date");
+          }
+        }
+
+        // Check if dates are not in the past (only if they're valid)
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); // Reset time to compare dates only
+
+        if (deliveryDate) {
+          const deliveryDateObj = new Date(deliveryDate);
+          if (deliveryDateObj < now) {
+            errors.push("Delivery Date cannot be in the past");
+          }
+        }
+
+        if (expectedDeliveryDate) {
+          const expectedDateObj = new Date(expectedDeliveryDate);
+          if (expectedDateObj < now) {
+            errors.push("Expected Delivery Date cannot be in the past");
+          }
+        }
+
+        if (errors.length > 0) {
+          invalidRows.push(`Row ${index + 1}: ${errors.join(", ")}`);
+        } else {
+          validRows.push({
+            itemNumber: row[0],
+            netPrice: row[5],
+            quantity: row[4],
+            deliveryDate: deliveryDate,
+            expectedDeliveryDate: expectedDeliveryDate
+          });
+        }
       });
+
       return { isValid: !invalidRows.length, invalidRows, validRows };
+    },
+
+    // Helper function to convert Excel serial number to yyyy-mm-dd string
+    _excelSerialToDateString: function (serial) {
+      try {
+        // Excel serial date: 1 = January 1, 1900
+        // JavaScript Date: 0 = January 1, 1970
+        const excelEpoch = new Date(1900, 0, 1);
+        const jsDate = new Date(excelEpoch.getTime() + (serial - 2) * 24 * 60 * 60 * 1000);
+
+        // Format as yyyy-mm-dd
+        const year = jsDate.getFullYear();
+        const month = String(jsDate.getMonth() + 1).padStart(2, '0');
+        const day = String(jsDate.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+      } catch (error) {
+        console.error("Error converting Excel serial date:", error);
+        return null;
+      }
+    },
+
+    // Helper function to validate date format
+    _isValidDate: function (dateString) {
+      if (!dateString) return false;
+
+      // Check if it matches yyyy-mm-dd format
+      const regex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!regex.test(dateString)) return false;
+
+      // Check if it's a valid date
+      const date = new Date(dateString);
+      return date instanceof Date && !isNaN(date);
     },
 
     _updateWorkItems: function (validRows) {
@@ -1448,6 +1635,13 @@ sap.ui.define([
         if (oItem) {
           oItem.Netpr = row.netPrice;
           oItem.Netwr = row.netPrice * row.quantity;
+          // Update dates if provided
+          if (row.deliveryDate) {
+            oItem.DeliveryDate = row.deliveryDate;
+          }
+          if (row.expectedDeliveryDate) {
+            oItem.ExpectedDeliveryDate = row.expectedDeliveryDate;
+          }
         }
       });
       oWorkItemsModel.setProperty("/results", aItems);
@@ -1470,10 +1664,11 @@ sap.ui.define([
         { label: "Plant", property: "Plant", type: EdmType.String },
         { label: "Net Price", property: "Netpr", type: EdmType.Number, scale: 2 },
         { label: "Net Worth", property: "Netwr", type: EdmType.Number, scale: 2 },
-        { label: "Long Text", property: "basic_longtext", type: EdmType.String }
+        { label: "Long Text", property: "basic_longtext", type: EdmType.String },
+        { label: "Delivery Date", property: "DeliveryDate", type: EdmType.String },
+        { label: "Expected Delivery Date", property: "ExpectedDeliveryDate", type: EdmType.String },
       ];
     },
-
 
     onExcelExport: function (oEvent) {
       const oTable = this.getView().byId("rfqEventsTable");
@@ -1871,6 +2066,20 @@ sap.ui.define([
     formatDate: function (sDate) {
       if (!sDate) return "";
       return sap.ui.core.format.DateFormat.getDateInstance({ pattern: "dd-MM-yyyy" }).format(new Date(sDate));
+    },
+
+    // Add this formatter function
+    formatSAPDate: function (sapDateString) {
+      if (!sapDateString) return null;
+
+      if (sapDateString.startsWith("/Date(")) {
+        const timestampMatch = sapDateString.match(/\/Date\((\d+)\)\//);
+        if (timestampMatch && timestampMatch[1]) {
+          const timestamp = parseInt(timestampMatch[1]);
+          return new Date(timestamp);
+        }
+      }
+      return sapDateString; // Return as-is if not in SAP format
     },
 
     formatStatusState: function (sStatus) {
