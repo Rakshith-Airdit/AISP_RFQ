@@ -1,193 +1,118 @@
-<core:FragmentDefinition
+<c:FragmentDefinition
     xmlns="sap.m"
-    xmlns:core="sap.ui.core"
+    xmlns:c="sap.ui.core"
 >
     <Popover
-        id="notificationPopover"
-        class="sapUiContentPadding"
-        placement="Bottom"
+        id="toolPopover"
+        placement="Left"
         contentHeight="400px"
-        contentWidth="375px"
+        contentWidth="450px"
         showHeader="false"
-        verticalScrolling="false"
+        ariaLabelledBy="master-title"
     >
-        <NavContainer id="navCon">
+        <NavContainer id="idNavContainer">
             <Page
                 id="master"
-                title="Messages ({= ${oNotificationsModel>/notifications}.length })"
+                title="Materials"
             >
-                <VBox
-                    height="100%"
-                    width="100%"
+                <ScrollContainer
+                    focusable="false"
+                    height="auto"
+                    horizontal="true"
+                    vertical="false"
+                    width="auto"
                 >
-                    <!-- <List
-                        id="list"
-                        items="{oNotificationsModel>/notifications}"
-                        growing="true"
-                        growingScrollToLoad="true"
-                    >
-                        <FeedListItem
-                            sender="{oNotificationsModel>Author}"
-                            icon="{oNotificationsModel>AuthorPicUrl}"
-                            iconPress="onNotificationItemPress"
-                            info="{oNotificationsModel>Type}"
-                            text="{oNotificationsModel>description}"
-                            timestamp="{path: 'oNotificationsModel>Date', formatter: '.formatDateTime'}"
-                            convertLinksToAnchorTags="All"
-                            press="onNavToDetail"
+                    <content>
+                        <List
+                            backgroundDesign="Solid"
+                            items="{rfqItemsData>/results}"
                         >
-                            <FeedListItemAction
-                                text="{oNotificationsModel>Actions/0/Text}"
-                                icon="{oNotificationsModel>Actions/0/Icon}"
-                                key="{oNotificationsModel>Actions/0/Key}"
-                                press="onActionPressed"
+                            <StandardListItem
+                                type="Navigation"
+                                press="onStandardListItemPress"
+                                title="{rfqItemsData>MaterialDesc}"
                             />
-                        </FeedListItem>
-                    </List> -->
+                        </List>
+                    </content>
+                </ScrollContainer>
+            </Page>
+            <Page
+                id="chatPageID"
+                title="Negotiation Tool"
+                showNavButton="true"
+                navButtonPress="onGoBackPress"
+            >
+                <VBox>
                     <List
-                        id="list"
-                        items="{oNotificationsModel>/notifications}"
-                        growing="true"
-                        growingScrollToLoad="true"
+                        backgroundDesign="Solid"
+                        items="{rfqItemsData>/Negotiation}"
+                        id="idNegotiationList"
                     >
-                        <StandardListItem
-                            title="{oNotificationsModel>Author}"
-                            description="{path: 'oNotificationsModel>Date', formatter: '.formatDateTime'}"
-                            iconDensityAware="false"
-                            counter="1"
-                            press="onNavToDetail"
-                            type="Navigation"
-                        >
-                            <!-- info="{oNotificationsModel>Type}" -->
-                            <!-- infoState="{= ${oNotificationsModel>Type} === 'Approval' ? 'Success' : 'Warning' }" -->
-
-                            <avatar>
-                                <Avatar
-                                    src="{oNotificationsModel>AuthorPicUrl}"
-                                    displaySize="XL"
-                                    displayShape="Circle"
-                                    showBorder="false"
-                                    backgroundColor="Accent6"
-                                />
-                            </avatar>
-                            <!-- <ObjectAttribute
-                                text="{oNotificationsModel>Author}"
-                            />
-                            <ObjectAttribute
-                                text="{path: 'oNotificationsModel>Date', formatter: '.formatDateTime'}"
-                            /> -->
-                        </StandardListItem>
+                        <CustomListItem accDescription="">
+                            <content>
+                                <HBox
+                                    alignItems="End"
+                                    direction="RowReverse"
+                                >
+                                    <Text
+                                        class="sapUiTinyMarginEnd"
+                                        text="Quoted Price : Rs"
+                                    />
+                                </HBox>
+                                <HBox
+                                    class="sapUiTinyMarginTop"
+                                    justifyContent="SpaceBetween"
+                                >
+                                    <Text
+                                        text="{rfqItemsData>messageContent}"
+                                        class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                                    />
+                                </HBox>
+                                <HBox
+                                    alignItems="End"
+                                    direction="RowReverse"
+                                >
+                                    <Avatar
+                                        badgeIcon="sap-icon://supplier"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBegin"
+                                    />
+                                    <Button
+                                        id="idAcceptButton"
+                                        class="sapUiTinyMarginBegin sapUiTinyMarginBottom"
+                                        text="Accept"
+                                        type="Accept"
+                                        press="onAcceptPriceButtonPress"
+                                    />
+                                    <Button
+                                        id="idRejectButton"
+                                        type="Reject"
+                                        text="Reject"
+                                        class="sapUiTinyMarginBegin sapUiTinyMarginBottom"
+                                        press="onRejectButtonPress"
+                                    />
+                                    <Button
+                                        id="idBestOffer"
+                                        type="Emphasized"
+                                        text="Best Offer"
+                                        class="sapUiTinyMarginBegin sapUiTinyMarginBottom"
+                                        press="onBestOfferButtonPress"
+                                    />
+                                </HBox>
+                            </content>
+                        </CustomListItem>
                     </List>
                 </VBox>
             </Page>
-            <Page
-                id="detail"
-                showNavButton="true"
-                navButtonPress="onNavBack"
-                title="Message"
-                enableScrolling="false"
-                titleAlignment="Start"
-                showFooter="true"
-            >
-                <content>
-                    <FlexBox
-                        id="idMainContainer"
-                        direction="Column"
-                        width="100%"
-                        height="100%"
-                        justifyContent="Start"
-                        fitContainer="true"
-                    >
-                        <ScrollContainer
-                            id="idMessagesScrollContainer"
-                            vertical="true"
-                            width="100%"
-                            height="100%"
-                        >
-                            <VBox
-                                id="idMessagesBox"
-                                width="100%"
-                            >
-                                <!-- Your message content here -->
-                                <HBox
-                                    id="idUserMsgHBox"
-                                    class="sapUiTinyMarginTopBottom"
-                                >
-                                    <Avatar
-                                        id="idUserAvatar"
-                                        displayShape="Circle"
-                                        displaySize="XS"
-                                        initials="U"
-                                    />
-                                    <MessageStrip
-                                        id="idUserMessageStrip"
-                                        text="Hi, do you have any questions?"
-                                        showIcon="false"
-                                    />
-                                </HBox>
-                                <HBox
-                                    id="idHBoxServerMsg"
-                                    class="sapUiTinyMarginTopBottom"
-                                    justifyContent="End"
-                                >
-                                    <MessageStrip
-                                        id="idServerMessageStrip"
-                                        text="Yes, I'd like more info about your services."
-                                        showIcon="false"
-                                    />
-                                    <Avatar
-                                        id="idServerAvatar"
-                                        displayShape="Circle"
-                                        displaySize="XS"
-                                        initials="AI"
-                                    />
-                                </HBox>
-                            </VBox>
-                        </ScrollContainer>
-                    </FlexBox>
-                </content>
-                <footer>
-                    <Toolbar>
-                        <FlexBox
-                            id="idChatInputRow"
-                            justifyContent="SpaceBetween"
-                            alignItems="Center"
-                            width="100%"
-                            class="sapUiResponsiveContentPadding"
-                        >
-                            <Input
-                                id="idUserChatInput"
-                                placeholder="Type your message..."
-                                width="100%"
-                                enabled="{= !${oSubmitStateModel>chatBusy} }"
-                            >
-                                <layoutData>
-                                    <FlexItemData growFactor="1" />
-                                </layoutData>
-                            </Input>
-                            <Button
-                                id="idSendChatBtn"
-                                icon="sap-icon://paper-plane"
-                                type="Emphasized"
-                                press=".onSendMessage"
-                                enabled="{= !${oSubmitStateModel>/chatBusy} }"
-                                busy="{oSubmitStateModel>/chatBusy}"
-                                busyIndicatorDelay="0"
-                                class="sapUiTinyMarginBegin"
-                            />
-                        </FlexBox>
-                    </Toolbar>
-
-                    <!-- <FeedInput
-                            id="idUserChatInput"
-                            placeholder="Type your message..."
-                            enabled="{= !${oSubmitStateModel>chatBusy} }"
-                            showIcon="false"
-                            post=".onSendMessage"
-                            rows="1"
-                        /> -->
-                </footer>
-            </Page>
         </NavContainer>
+        <footer>
+            <Toolbar>
+                <content>
+                    <Button
+                        text="close"
+                        press="closePopover"
+                    />
+                </content>
+            </Toolbar>
+        </footer>
     </Popover>
-</core:FragmentDefinition>
+</c:FragmentDefinition>

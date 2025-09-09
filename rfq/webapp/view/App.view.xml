@@ -18,7 +18,7 @@
                         class="sapUiTinyMarginBegin"
                     />
                     <ToolbarSpacer />
-                    <Button
+                    <!-- <Button
                         id="BadgedButton"
                         class="sapUiTinyMarginBeginEnd"
                         icon="sap-icon://message-popup"
@@ -34,7 +34,7 @@
                                 visible="{= ${oNotificationsModel>/notifications}.length > 0}"
                             />
                         </customData>
-                    </Button>
+                    </Button> -->
                 </content>
             </OverflowToolbar>
         </customHeader>

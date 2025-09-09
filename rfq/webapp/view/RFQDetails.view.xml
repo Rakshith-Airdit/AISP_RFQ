@@ -40,6 +40,24 @@
                         wrapping="true"
                     />
                 </expandedHeading>
+                <actions>
+                    <m:Button
+                        id="BadgedButton"
+                        class="sapUiMediumMarginBottom"
+                        icon="sap-icon://message-popup"
+                        type="Transparent"
+                        badgeStyle="Default"
+                        press="onChatButtonPress"
+                        ariaHasPopup="Dialog"
+                    >
+                        <m:customData>
+                            <m:BadgeCustomData
+                                key="{chatModel>/unreadMessageCount}"
+                                value="{= ${chatModel>/unreadMessageCount} > 0 }"
+                            />
+                        </m:customData>
+                    </m:Button>
+                </actions>
                 <snappedHeading>
                     <m:HBox
                         wrap="NoWrap"

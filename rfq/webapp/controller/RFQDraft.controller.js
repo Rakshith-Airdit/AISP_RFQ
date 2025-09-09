@@ -976,7 +976,7 @@ sap.ui.define([
 
         onPreviewAdditionalAttachment: function (oEvent) {
             const oContext = oEvent.getSource().getBindingContext("oWorkHeaderModel");
-            debugger;
+            
             const sFileUrl = oContext.getProperty("FILE_URL");
             const sFileName = oContext.getProperty("FILE_NAME");
 

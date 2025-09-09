@@ -1,0 +1,32 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <Popover
+        id="bestOfferPopover"
+        title="Enter best Price"
+        showHeader="true"
+        placement="Bottom"
+        contentWidth="200px"
+    >
+        <content>
+            <VBox class="sapUiContentPadding">
+                <Input
+                    id="bestPriceInput"
+                    placeholder="Enter Price"
+                    type="Number"
+                />
+            </VBox>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer />
+                <Button
+                    text="Send"
+                    type="Emphasized"
+                    press="onSendPress"
+                />
+            </Toolbar>
+        </footer>
+    </Popover>
+</c:FragmentDefinition>

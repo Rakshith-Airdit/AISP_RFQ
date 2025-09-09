@@ -104,7 +104,7 @@ sap.ui.define(
 
       formatTimeRemaining: function (deadlineTimestamp) {
         // Handle null/undefined/empty values
-        debugger;
+        
         if (!deadlineTimestamp) {
           return "No deadline set";
         }

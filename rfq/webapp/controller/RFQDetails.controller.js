@@ -9,7 +9,8 @@ sap.ui.define([
   "sap/ui/export/Spreadsheet",
   "sap/ui/export/library",
   "sap/ui/export/ExportHandler",
-  "sap/ui/core/format/DateFormat"
+  "sap/ui/core/format/DateFormat",
+  "sap/ui/core/ws/WebSocket",
 ], function (
   Controller,
   Filter,
@@ -21,7 +22,8 @@ sap.ui.define([
   Spreadsheet,
   library,
   ExportHandler,
-  DateFormat
+  DateFormat,
+  WebSocket
 ) {
   "use strict";
 
@@ -129,6 +131,12 @@ sap.ui.define([
         this._navigateToList();
         return;
       }
+
+      this.initialiseSocket();
+
+      this.rfqNumber = rfqNum;
+      this.Bidder = bidder;
+      this.getMaterialsName(rfqNum, bidder);
 
       try {
         this._initializeModels();
@@ -938,7 +946,7 @@ sap.ui.define([
               let oResponse = await this._submitRFQ();
               this.getView().getModel("oHeaderModel").setProperty("/results/0/Status", this.CONFIG.STATUS.SUBMITTED);
               this._updateUIState(this.CONFIG.STATUS.SUBMITTED);
-              debugger;
+
               let responseMsg = oResponse?.SubmitRFQ?.message || "RFQ submitted successfully"
               let that = this;
               // MessageToast.show("RFQ submitted successfully");
@@ -989,7 +997,7 @@ sap.ui.define([
               let that = this;
               this._setBusy(true);
               let oResponse = await this._saveDraft();
-              debugger;
+
               this.getView().getModel("oHeaderModel").setProperty("/results/0/Status", this.CONFIG.STATUS.DRAFT);
               this._updateUIState(this.CONFIG.STATUS.DRAFT);
               // MessageToast.show("Draft finalized successfully.");
@@ -1125,7 +1133,7 @@ sap.ui.define([
           if (sAction === MessageBox.Action.YES) {
             try {
               let oResponse = await this._updateQuotation();
-              debugger;
+
               const oUIState = this.getView().getModel("uiState").getData();
               oUIState.buttons.updateQuotation.visible = false;
               oUIState.buttons.updateQuotation.enabled = false;
@@ -1166,7 +1174,7 @@ sap.ui.define([
           method: "POST",
           urlParameters: { RfqNumber, Bidder, Action: sAction },
           success: (oData) => {
-            debugger;
+
             const responseString = oData.results || oData.setRFQStatus;
             let message = '';
             let supplierQuotation = '';
@@ -1434,7 +1442,7 @@ sap.ui.define([
     },
 
     // calculateTotalValue: function (aItems, aCharges) {
-    //   debugger;
+    //   
     //   if (!aItems || !Array.isArray(aItems) || !aCharges || !Array.isArray(aCharges)) return "0.00";
 
     //   const fItemsTotal = aItems.reduce((sum, item) => {
@@ -1494,7 +1502,7 @@ sap.ui.define([
         if (!filteredData || filteredData.length === 0) {
           this._showError("File uploaded is not valid");
         }
-        debugger;
+
         const { isValid, invalidRows, validRows } = this._validateExcelData(filteredData);
         if (isValid) {
           this._updateWorkItems(validRows);
@@ -2189,6 +2197,386 @@ sap.ui.define([
         oUIStateModel.setData(oUIState);
         oUIStateModel.refresh(true);
       }
-    }
+    },
+
+    /* === CHATBOT METHODS === */
+
+    onChatButtonPress: function (oEvent) {
+      var oButton = oEvent.getSource(),
+        oView = this.getView();
+
+      if (!this._oPopover) {
+        Fragment.load({
+          id: oView.getId(),
+          name: "com.aisp.rfq.fragments.Notification",
+          controller: this,
+        }).then(
+          function (oPopover) {
+            oView.addDependent(oPopover);
+            this._oPopover = oPopover;
+
+            this._oPopover.openBy(oButton);
+          }.bind(this)
+        );
+      } else {
+        this._oPopover.openBy(oButton);
+        const oWorkHeaderData = this.getView()
+          .getModel("oItemsModel")
+          .getData();
+        console.log(oWorkHeaderData);
+      }
+    },
+
+    closePopover: function () {
+      if (this._oPopover) {
+        this._oPopover.close();
+      }
+    },
+
+    getMaterialsName: function (rfq, bidder) {
+      let oModel = this.getOwnerComponent().getModel();
+      let oJSONModel = new sap.ui.model.json.JSONModel();
+      let sPath = "/ZC_AISP_RFQ_ITEM";
+      let oFilters = [
+        new sap.ui.model.Filter("RfqNumber", sap.ui.model.FilterOperator.EQ, rfq),
+        new sap.ui.model.Filter("Bidder", sap.ui.model.FilterOperator.EQ, bidder),
+      ];
+
+      oModel.read(sPath, {
+        filters: oFilters,
+        success: function (oData) {
+          // Prepare data object with results and empty Negotiation property
+          const formattedData = {
+            results: oData.results,
+            Negotiation: []
+          };
+          oJSONModel.setData(formattedData);
+          this.getView().setModel(oJSONModel, "rfqItemsData");
+        }.bind(this),
+        error: function (oError) {
+          // Handle error
+        }
+      });
+    },
+
+    onStandardListItemPress: async function (oEvent) {
+      debugger;
+      const selectedMaterial = oEvent
+        .getSource()
+        .getBindingContext("rfqItemsData")
+        .getObject().MaterialNo;
+      this.mat = selectedMaterial;
+      // this.getView().getModel(
+      //   "rfqItemsData"
+      // ).oData.Negotiation[0].materialNo = "m1";
+
+      // console.log(
+      //   this.getView().getModel("rfqItemsData").oData.Negotiation[0]
+      //     .materialNo
+      // );
+
+      await this.onUpdateNegotiationData(selectedMaterial);
+
+      const messageStrip = this.getView()
+        .byId("idNegotiationList")
+        .getItems()[0].mAggregations.content[1].mAggregations.items[0];
+
+      const modelData = this.getView()
+        .getModel("rfqItemsData")
+        .getProperty("/Negotiation/0");
+
+      if (modelData.expectedPrice) {
+        messageStrip.setText = `Buyer is expecting ${modelData.expectedPrice} Rs`;
+      } else {
+        messageStrip.setTex = `Buyer wants to know your best offer.`;
+      }
+
+      var oNavContainer = this.byId("idNavContainer");
+      console.log(oNavContainer);
+      var oPage = this.byId("chatPageID");
+      console.log(oPage);
+
+      const roomInfo = `supplierId-rfqNum-matNum`;
+      this.socket.send(
+        JSON.stringify({
+          type: "register",
+          roomInfo,
+        })
+      );
+
+      // Navigate to the page inside the NavContainer
+      oNavContainer.to(oPage);
+      this.byId("toolPopover").addAriaDescribedBy(this.byId("chatPageID"));
+      this.byId("toolPopover").focus();
+    },
+
+    onUpdateNegotiationData: async function (selectedMaterial) {
+      // Get a reference to your JSON model
+      const oModel = this.getView().getModel("rfqItemsData");
+
+      // Optional: Show a busy indicator while fetching data
+      this.getView().setBusy(true);
+
+      try {
+        // Fetch the new data using the helper function that calls the /latest API
+        const oLatestRecord = await this._getNewNegotiationData(selectedMaterial);
+
+        if (oLatestRecord) {
+          // Get the current Negotiation array
+          const aNegotiationData = oModel.getProperty("/Negotiation/0");
+          console.log(aNegotiationData);
+          // Find the index of the object that matches the fetched record's properties
+          // const iIndex = aNegotiationData.findIndex(
+          //   (item) =>
+          //     item.buyerId === oLatestRecord.buyerId &&
+          //     item.supplierId === oLatestRecord.supplierId &&
+          //     item.rfqNumber === oLatestRecord.rfqNumber &&
+          //     item.materialNo === oLatestRecord.materialNo
+          // );
+
+          //   console.log(iIndex)
+
+          // if (iIndex !== -1) {
+          //   // If a matching record is found, update it in place
+          //   aNegotiationData[0] = oLatestRecord;
+          // }
+          // Update the entire array in the model, triggering UI rerendering
+          oModel.setProperty("/Negotiation/0", oLatestRecord);
+
+          console.log(oModel.getProperty("/Negotiation/0"));
+
+          sap.m.MessageToast.show("Negotiation data updated successfully!");
+        } else {
+          sap.m.MessageToast.show("No new data to update.");
+        }
+      } catch (error) {
+        sap.m.MessageToast.show("Failed to update data: " + error.message);
+      } finally {
+        this.getView().setBusy(false);
+      }
+    },
+
+    _getNewNegotiationData: async function (selectedMaterial) {
+      const sBuyerId = "b1"; // Replace with dynamic value from your UI
+      // const sSupplierId = this.Bidder; // Replace with dynamic value from your UI
+      // const sRfqNumber = this.rfqNumber; // Replace with dynamic value from your UI
+      // const sMaterialNo = this.mat; // Replace with dynamic value from your UI
+
+      const sUrl = `https://chat_micro_service.cfapps.ap10.hana.ondemand.com/api/chat/latest?buyerId=${sBuyerId}&supplierId=${this.Bidder}&rfqNumber=${this.rfqNumber}&materialNo=${selectedMaterial}`;
+
+      try {
+        const response = await fetch(sUrl);
+        const data = await response.json();
+
+        if (data.success) {
+          debugger;
+          // The API returns a single message object under the 'message' key
+          return data.message;
+        } else {
+          console.error("API error:", data.error);
+          return null;
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        throw new Error("Could not connect to the backend.");
+      }
+    },
+
+    initialiseSocket: function () {
+      this.socket = new WebSocket("wss://chat_micro_service.cfapps.ap10.hana.ondemand.com:8080");
+      this.socket.attachMessage(
+        async function (oEvent) {
+          // This function will be called automatically when a message arrives
+
+          var sMessage = oEvent.getParameter("data");
+          console.log("Received a message: " + sMessage);
+          //  await this.onUpdateNegotiationData();
+        }.bind(this)
+      );
+    },
+
+    onBestOfferButtonPress: async function (oEvent) {
+      // Get the required data from UI elements
+
+      var oButton = oEvent.getSource();
+      if (!this._oBestOfferPopover) {
+        Fragment.load({
+          id: this.getView().getId(),
+          name: "com.aisp.rfq.fragments.Bestoffer",
+          controller: this,
+        }).then(
+          function (oPopover) {
+            this._oBestOfferPopover = oPopover;
+            this.getView().addDependent(this._oBestOfferPopover);
+            this._oBestOfferPopover.openBy(oButton);
+          }.bind(this)
+        );
+      } else {
+        this._oBestOfferPopover.openBy(oButton);
+      }
+    },
+
+    onRejectButtonPress: async function (oEvent) {
+      this.getView().setBusy(true);
+
+      try {
+        // 1. Get the message ID from the selected item's data
+        const oButton = oEvent.getSource();
+        const oBindingContext = oButton.getBindingContext("toolTipModel");
+        const oData = oBindingContext.getObject();
+        const messageId = oData._id; // Assuming your message object has an _id field
+
+        // 2. Prepare the fetch options
+        const sUrl = "https://chat_micro_service.cfapps.ap10.hana.ondemand.com/api/chat/seller/reject"; // The relative path to your backend endpoint
+        const oFetchOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messageId: messageId,
+          }),
+        };
+
+        // 3. Send the request and wait for the response
+        const response = await fetch(sUrl, oFetchOptions);
+        const data = await response.json();
+
+        // 4. Handle the response
+        if (data.success) {
+          // Success: Show a message and potentially update the model
+          sap.m.MessageToast.show("Price rejected successfully!");
+          // You can refresh your model here to get the updated status
+          this.getView().getModel("toolTipModel").refresh();
+        } else {
+          // Error: Show the error message from the backend
+          sap.m.MessageToast.show("Failed to reject price: " + data.error);
+        }
+      } catch (error) {
+        // Handle network or other unexpected errors
+        sap.m.MessageToast.show("An error occurred: " + error.message);
+      } finally {
+        // Hide the busy indicator
+        this.getView().setBusy(false);
+      }
+    },
+
+    onAcceptPriceButtonPress: async function (oEVent) {
+      this.getView().setBusy(true);
+
+      try {
+        // 1. Get the message ID from the selected item's data
+        const oButton = oEvent.getSource();
+        const oBindingContext = oButton.getBindingContext("toolTipModel");
+        const oData = oBindingContext.getObject();
+        const messageId = oData._id; // Assuming your message object has an _id field
+
+        // 2. Check if a message ID exists before proceeding
+        if (!messageId) {
+          sap.m.MessageToast.show("Error: No message ID found.");
+          return;
+        }
+
+        // 3. Prepare the fetch options for the POST request
+        const sUrl = "https://chat_micro_service.cfapps.ap10.hana.ondemand.com/api/chat/seller/accept";
+        const oFetchOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messageId: messageId,
+          }),
+        };
+
+        // 4. Send the request and handle the response
+        const response = await fetch(sUrl, oFetchOptions);
+        const data = await response.json();
+
+        // 5. Process the backend's response
+        if (data.success) {
+          sap.m.MessageToast.show("Price accepted successfully! 🎉");
+          // Automatically refresh the JSON model to reflect the status change
+          //this.getView().getModel("toolTipModel").refresh();
+        } else {
+          sap.m.MessageToast.show("Failed to accept price: " + data.error);
+        }
+      } catch (error) {
+        // Handle network or other unexpected errors
+        sap.m.MessageToast.show("An error occurred: " + error.message);
+      } finally {
+        // Hide the busy indicator, regardless of success or failure
+        this.getView().setBusy(false);
+      }
+    },
+
+    onSendPress: async function () {
+      const sBuyerId = "b1";
+      const sSupplierId = this.Bidder;
+      const sRfqNumber = this.rfqNumber;
+      const sMaterialNo = this.mat;
+      const sBestOffer = this.getView().byId("bestPriceInput").getValue();
+
+      // Validate if the input fields are filled
+      if (
+        !sBuyerId ||
+        !sSupplierId ||
+        !sRfqNumber ||
+        !sMaterialNo ||
+        !sBestOffer
+      ) {
+        sap.m.MessageToast.show("Please fill in all required fields.");
+        return;
+      }
+
+      // Prepare the data to be sent in the request body
+      const oPayload = {
+        buyerId: sBuyerId,
+        supplierId: sSupplierId,
+        rfqNumber: sRfqNumber,
+        materialNo: sMaterialNo,
+        bestOffer: sBestOffer,
+      };
+
+      // Show a busy indicator
+      this.getView().setBusy(true);
+
+      try {
+        const response = await fetch(
+          "https://chat_micro_service.cfapps.ap10.hana.ondemand.com/api/chat/seller/best-offer",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(oPayload),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          const to = "buyerId-rfqNum-matNum";
+          const message = "best offer sent";
+          this.socket.send(JSON.stringify({ type: "Dm", to, message }));
+          sap.m.MessageToast.show("Best offer submitted successfully!");
+          // Refresh the messages list to show the new offer
+        } else {
+          sap.m.MessageToast.show(
+            data.error || "Failed to submit best offer."
+          );
+        }
+      } catch (error) {
+        sap.m.MessageToast.show("An error occurred: " + error.message);
+      } finally {
+        this.getView().setBusy(false);
+      }
+    },
+
+    onGoBackPress: function (oEvent) {
+      const oNavContainer = this.byId("idNavContainer");
+      var oFirstPage = this.byId("master");
+      oNavContainer.to(oFirstPage);
+    },
   });
 });
