@@ -29,6 +29,10 @@
                             <PropertyValue Property="Label" String="RFQ No" />
                         </Record>
                         <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="VendorName" />
+                            <PropertyValue Property="Label" String="Vendor Name"/>
+                        </Record>
+                        <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="Bidder" />
                             <PropertyValue Property="Label" String="Bidder" />
                         </Record>
@@ -48,6 +52,10 @@
                         <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="RfqNumber" />
                             <PropertyValue Property="Label" String="RFQ No" />
+                        </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="VendorName" />
+                            <PropertyValue Property="Label" String="VendorName"/>
                         </Record>
                         <Record Type="UI.DataField">
                             <PropertyValue Property="Value" Path="Bidder" />

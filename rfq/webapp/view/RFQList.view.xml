@@ -31,9 +31,7 @@
                     label="Published Date and Time"
                     visibleInAdvancedArea="true"
                     filterType="single"
-                    conditionType="{
-                                            module: 'sap.ui.comp.config.condition.DateRangeType'
-                                        }"
+                    conditionType="{ module: 'sap.ui.comp.config.condition.DateRangeType' }"
                 />
                 <!-- <smartFilterBar:ControlConfiguration
                     key="Deadline_dt"
@@ -110,11 +108,29 @@
                             noDataText="No Data"
                         >
                             <columns>
+                                <Column
+                                    hAlign="Center"
+                                    demandPopin="true"
+                                    minScreenWidth="Tablet"
+                                    popinDisplay="Inline"
+                                    width="auto"
+                                >
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='\{"columnKey": "COMPANY_LOGO","leadingProperty": "COMPANY_LOGO", "sortProperty": "COMPANY_LOGO", "filterProperty": "COMPANY_LOGO", "columnIndex": "0" }'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Company Logo"
+                                        wrapping="true"
+                                    />
+                                </Column>
                                 <Column>
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":2}'
+                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":1}'
                                         />
                                     </customData>
                                     <Label
@@ -126,7 +142,7 @@
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":3}'
+                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":5}'
                                         />
                                     </customData>
                                     <Label
@@ -134,11 +150,12 @@
                                         wrapping="false"
                                     />
                                 </Column>
+
                                 <Column>
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":4}'
+                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":6}'
                                         />
                                     </customData>
                                     <Label
@@ -154,6 +171,13 @@
                                     vAlign="Middle"
                                 >
                                     <cells>
+                                        <Avatar
+                                            src="{= ${PROFILE_IMAGE} ? ${PROFILE_IMAGE} : './Images/Industry.png' }"
+                                            displaySize="S"
+                                            initials="{= ${VendorName} ? ${VendorName}.substring(0, 2).toUpperCase() : 'AB' }"
+                                            displayShape="Circle"
+                                            class="sapUiTinyMarginEnd"
+                                        />
                                         <Text
                                             text="{path:'Published_d', formatter:'.formatDate'}"
                                         />
@@ -214,7 +238,7 @@
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":2}'
+                                            value='{"columnKey":"Published_d","leadingProperty":"Published_d","sortProperty":"Published_d","filterProperty":"Published_d","columnIndex":1}'
                                         />
                                     </customData>
                                     <Label
@@ -222,11 +246,29 @@
                                         wrapping="false"
                                     />
                                 </Column>
+                                <Column
+                                    hAlign="Center"
+                                    demandPopin="true"
+                                    minScreenWidth="Tablet"
+                                    popinDisplay="Inline"
+                                    width="auto"
+                                >
+                                    <customData>
+                                        <core:CustomData
+                                            key="p13nData"
+                                            value='\{"columnKey": "COMPANY_LOGO","leadingProperty": "COMPANY_LOGO", "sortProperty": "COMPANY_LOGO", "filterProperty": "COMPANY_LOGO", "columnIndex": "0" }'
+                                        />
+                                    </customData>
+                                    <Label
+                                        text="Company Logo"
+                                        wrapping="true"
+                                    />
+                                </Column>
                                 <Column>
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":3}'
+                                            value='{"columnKey":"Time Remaining","leadingProperty":"Time Remaining","sortProperty":"Time Remaining","filterProperty":"Time Remaining","columnIndex":5}'
                                         />
                                     </customData>
                                     <Label
@@ -238,7 +280,7 @@
                                     <customData>
                                         <core:CustomData
                                             key="p13nData"
-                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":4}'
+                                            value='{"columnKey":"Status","leadingProperty":"Status","sortProperty":"Status","filterProperty":"Status","columnIndex":6}'
                                         />
                                     </customData>
                                     <Label
@@ -256,6 +298,13 @@
                                     <cells>
                                         <Text
                                             text="{path:'Published_d', formatter:'.formatDate'}"
+                                        />
+                                        <Avatar
+                                            src="{= ${PROFILE_IMAGE} ? ${PROFILE_IMAGE} : './Images/Industry.png' }"
+                                            displaySize="S"
+                                            initials="{= ${VendorName} ? ${VendorName}.substring(0, 2).toUpperCase() : 'AB' }"
+                                            displayShape="Circle"
+                                            class="sapUiTinyMarginEnd"
                                         />
                                         <ProgressIndicator
                                             class="sapUiSmallMarginBottom"
